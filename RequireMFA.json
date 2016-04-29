@@ -1,0 +1,27 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "RequireMfaUse",
+            "Effect": "Deny",
+            "NotAction": "*",
+            "Resource": "*",
+            "Condition": {
+                "Null": {
+                    "aws:MultiFactorAuthAge": "true"
+                }
+            }
+        },
+        {
+            "Sid": "RequireMfaWithinTimeFrame",
+            "Effect": "Deny",
+            "NotAction": "*",
+            "Resource": "*",
+            "Condition": {
+                "NumericGreaterThan": {
+                    "aws:MultiFactorAuthAge": "28800"
+                }
+            }
+        }
+    ]
+}
