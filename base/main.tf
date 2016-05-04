@@ -25,12 +25,14 @@ resource "aws_iam_group" "admin-group" {
     name = "administrators"
 }
 
-# Attach MFA policy to admin group
+# Create a policy that requires multifactor authentication
 resource "aws_iam_policy" "require_mfa-policy" {
     name = "require_mfa-policy"
     description = "Require use of Multifactor Authentication"
     policy = "${file("files/RequireMFA.json")}"
 }
+
+# Attach MFA policy to admin group
 resource "aws_iam_policy_attachment" "require_mfa-attach" {
     name = "require_mfa-attach"
     groups = ["${aws_iam_group.admin-group.name}"]
@@ -44,7 +46,7 @@ resource "aws_iam_policy_attachment" "admin_access-attach" {
     policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }
 
-# Create an SNS topic for tf_state-bucket notifications
+# Create a policy to allow S3 bucket notifications to SNS
 variable "tf_sns_topic_name" {
     description = "Hack to work around GH-4157"
     default = "tf_state_notifications"
@@ -58,11 +60,14 @@ resource "template_file" "bucket_sns-policy" {
         bucket_name = "${var.tf_state_bucket}"
     }
 }
+
+# Create an SNS topic for tf_state-bucket notifications
 resource "aws_sns_topic" "tf_state_bucket-topic" {
     name = "${var.tf_sns_topic_name}"
     display_name = "tf-state"
     policy = "${template_file.bucket_sns-policy.rendered}"
 }
+
 # email protocol not supported, as it requires out-of-band authorization
 #resource "aws_sns_topic_subscription" "bucket_writes_sub" {
 #    topic_arn = "${aws_sns_topic.bucket_writes.arn}"
@@ -86,6 +91,8 @@ resource "aws_s3_bucket" "tf_state-bucket" {
         Name = "terraform state bucket"
     }
 }
+
+# Enable notifications for tf_state bucket
 resource "aws_s3_bucket_notification" "tf_state_bucket-notify" {
     bucket = "${aws_s3_bucket.tf_state-bucket.id}"
     topic {
@@ -96,4 +103,18 @@ resource "aws_s3_bucket_notification" "tf_state_bucket-notify" {
         ]
     }
 }
+
+# Configure remote state
+resource "terraform_remote_state" "mozreview_base" {
+    backend = "s3"
+    config {
+        encrypt = true
+        acl = "private"
+        bucket = "${var.tf_state_bucket}"
+        region = "${var.region}"
+        key = "${var.env}/${var.tf_state_file}"
+    }
+}
+# outputs can be accessed via
+# ${terraform_remote_state.mozreview_base.output.output_name}
 

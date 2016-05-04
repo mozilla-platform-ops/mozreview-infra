@@ -14,3 +14,8 @@ variable "cloudtrail_bucket" {
     description = "Name of the S3 bucket for local cloudtrail logging"
     default = "moz-mozreview-logging"
 }
+
+variable "tf_state_file" {
+    description = "Name of the Terraform remote state file"
+    default = "terraform.tfstate"
+}
