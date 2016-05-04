@@ -44,23 +44,6 @@ resource "aws_iam_policy_attachment" "admin_access-attach" {
     policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }
 
-# Create bucket for remote state
-resource "aws_s3_bucket" "tf_state-bucket" {
-    bucket = "${var.tf_state_bucket}"
-    acl = "private"
-    #policy = ""
-    versioning {
-        enabled = true
-    }
-    logging {
-        target_bucket = "${module.cloudtrail.bucket_id}"
-        target_prefix = "s3/${var.tf_state_bucket}/"
-    }
-    tags {
-        Name = "terraform state bucket"
-    }
-}
-
 # Create an SNS topic for tf_state-bucket notifications
 variable "tf_sns_topic_name" {
     description = "Hack to work around GH-4157"
@@ -87,6 +70,32 @@ resource "aws_sns_topic" "tf_state_bucket-topic" {
 #    endpoint = "..."
 #}
 
+# Create bucket for remote state
+resource "aws_s3_bucket" "tf_state-bucket" {
+    bucket = "${var.tf_state_bucket}"
+    acl = "private"
+    #policy = ""
+    versioning {
+        enabled = true
+    }
+    logging {
+        target_bucket = "${module.cloudtrail.bucket_id}"
+        target_prefix = "s3/${var.tf_state_bucket}/"
+    }
+    tags {
+        Name = "terraform state bucket"
+    }
+}
+resource "aws_s3_bucket_notification" "tf_state_bucket-notify" {
+    bucket = "${aws_s3_bucket.tf_state-bucket.id}"
+    topic {
+        topic_arn = "${aws_sns_topic.tf_state_bucket-topic.arn}"
+        events = [
+            "s3:ObjectCreated:*",
+            "s3:ObjectRemoved:*"
+        ]
+    }
+}
 
 output "tf_state_bucket_arn" {
     value = "${aws_s3_bucket.tf_state-bucket.arn}"
