@@ -8,3 +8,7 @@ variable "profile" {
 variable "region" {
     description = "The AWS region to create things in."
 }
+
+variable "env" {
+    description = "Environment name"
+}
