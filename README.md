@@ -1,12 +1,17 @@
 Mozilla DevServices AWS Account Initialization
 ==============================================
 
+https://mozreview.signin.aws.amazon.com/console
+
 A Terraform configuration to set up a new AWS account.
-- Creates an S3 bucket and enables (local) Cloudtrail logging
+- Creates an S3 bucket and enables (local) Cloudtrail and bucket logging
 - Configures the IAM password policy
 - Creates an (empty) group for administrators
 - Creates a policy to require Multifactor Authentication
 - Attaches MFA and AdministratorAccess policies to admin group
+- Creates an S3 bucket for remote state, with SNS-to-email notifications
+
+Helper scripts for working with MFA can be found at https://github.com/klibby/aws_mfa_scripts.git
 
 Input Variables
 ---------------
