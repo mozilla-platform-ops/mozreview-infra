@@ -5,7 +5,7 @@ provider "aws" {
 
 # Enable Cloudtrail logging to S3 bucket local to account
 module "cloudtrail" {
-    source = "./cloudtrail"
+    source = "../modules/cloudtrail"
     account_id = "${var.account_id}"
     bucket_name = "${var.cloudtrail_bucket}"
 }
@@ -29,7 +29,7 @@ resource "aws_iam_group" "admin-group" {
 resource "aws_iam_policy" "require_mfa-policy" {
     name = "require_mfa-policy"
     description = "Require use of Multifactor Authentication"
-    policy = "${file("RequireMFA.json")}"
+    policy = "${file("files/RequireMFA.json")}"
 }
 resource "aws_iam_policy_attachment" "require_mfa-attach" {
     name = "require_mfa-attach"
@@ -50,7 +50,7 @@ variable "tf_sns_topic_name" {
     default = "tf_state_notifications"
 }
 resource "template_file" "bucket_sns-policy" {
-    template = "${file("bucket_sns.json.tmpl")}"
+    template = "${file("files/bucket_sns.json.tmpl")}"
     vars {
         region = "${var.region}"
         account_id = "${var.account_id}"
