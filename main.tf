@@ -43,3 +43,27 @@ resource "aws_iam_policy_attachment" "admin_access-attach" {
     groups = ["${aws_iam_group.admin-group.name}"]
     policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }
+
+# Create bucket for remote state
+resource "aws_s3_bucket" "tf_state-bucket" {
+    bucket = "${var.tf_state_bucket}"
+    acl = "private"
+    #policy = ""
+    versioning {
+        enabled = true
+    }
+    logging {
+        target_bucket = "${module.cloudtrail.bucket_id}"
+        target_prefix = "s3/${var.tf_state_bucket}/"
+    }
+    tags {
+        Name = "terraform state bucket"
+    }
+}
+
+output "tf_state_bucket_arn" {
+    value = "${aws_s3_bucket.tf_state-bucket.arn}"
+}
+output "tf_state_bucket_id" {
+    value = "${aws_s3_bucket.tf_state-bucket.id}"
+}

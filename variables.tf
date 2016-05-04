@@ -4,6 +4,9 @@ variable "account_id" {
 variable "profile" {
     description = "Name of the AWS profile to grab credentials from"
 }
+variable "tf_state_bucket" {
+    description = "Name of the S3 bucket for Terraform remote state"
+}
 variable "cloudtrail_bucket" {
     description = "Name of the S3 bucket for local cloudtrail logging"
 }
