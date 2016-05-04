@@ -16,7 +16,7 @@ resource "template_file" "logging_bucket_policy" {
 
 resource "aws_s3_bucket" "logging_bucket" {
     bucket = "${var.bucket_name}"
-    acl = "private"
+    acl = "log-delivery-write"
     policy = "${template_file.logging_bucket_policy.rendered}"
     tags {
         Name = "cloudtrail bucket"
