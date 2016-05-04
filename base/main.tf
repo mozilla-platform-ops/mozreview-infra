@@ -97,9 +97,3 @@ resource "aws_s3_bucket_notification" "tf_state_bucket-notify" {
     }
 }
 
-output "tf_state_bucket_arn" {
-    value = "${aws_s3_bucket.tf_state-bucket.arn}"
-}
-output "tf_state_bucket_id" {
-    value = "${aws_s3_bucket.tf_state-bucket.id}"
-}
