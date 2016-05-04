@@ -4,7 +4,7 @@ variable "account_id" {
 variable "profile" {
     description = "Name of the AWS profile to grab credentials from"
 }
-variable "bucket" {
+variable "cloudtrail_bucket" {
     description = "Name of the S3 bucket for local cloudtrail logging"
 }
 variable "region" {

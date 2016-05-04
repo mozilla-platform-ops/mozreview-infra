@@ -7,7 +7,7 @@ provider "aws" {
 module "cloudtrail" {
     source = "./cloudtrail"
     account_id = "${var.account_id}"
-    bucket_name = "${var.bucket}"
+    bucket_name = "${var.cloudtrail_bucket}"
 }
 
 # Configure password policy
