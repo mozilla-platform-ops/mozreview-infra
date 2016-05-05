@@ -2,7 +2,7 @@
 # 
 set -euf -o pipefail
 
-tfenv="dev"
+tfenv=$(basename $(pwd))
 
 # Set up remote state
 terraform remote config -backend=s3 \
