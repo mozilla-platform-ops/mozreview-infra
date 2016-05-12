@@ -104,17 +104,4 @@ resource "aws_s3_bucket_notification" "tf_state_bucket-notify" {
     }
 }
 
-# Configure remote state
-resource "terraform_remote_state" "mozreview_base" {
-    backend = "s3"
-    config {
-        encrypt = true
-        acl = "private"
-        bucket = "${var.tf_state_bucket}"
-        region = "${var.region}"
-        key = "${var.env}/${var.tf_state_file}"
-    }
-}
-# outputs can be accessed via
-# ${terraform_remote_state.mozreview_base.output.output_name}
 
