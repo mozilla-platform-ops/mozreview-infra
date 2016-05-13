@@ -2,6 +2,14 @@
 This file defines the global VPC configuration including VPNs
 */
 
+# Create EIP for bastion host (to be associated later)
+resource "aws_eip" "bastion-eip" {
+    vpc = true
+    lifecycle {
+        prevent_destroy = true
+    }
+}
+
 # Define Primary VPC network
 resource "aws_vpc" "primary_vpc" {
     # cidr_block will change once determined by netops

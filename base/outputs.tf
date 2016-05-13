@@ -20,3 +20,11 @@ output "ssh_only-sg" {
     value = "${aws_security_group.ssh_only-sg.id}"
 }
 
+#output "bastion_eip_id" {
+#    value = "${aws_eip.bastion-eip.allocation_id}"
+#}
+
+# Elastic IP for bastion host
+output "bastion_eip" {
+    value = "${aws_eip.bastion-eip.public_ip}"
+}
