@@ -123,4 +123,55 @@ resource "aws_s3_bucket_notification" "tf_state_bucket-notify" {
     }
 }
 
+# Allow EC2 to assume role for further actions
+resource "aws_iam_role" "ec2_assume-role" {
+    name = "ec2_assume_role"
+    assume_role_policy = "${file("files/ec2_assume.json")}"
+}
+
+# Create instance profile for EC2 instances to assume role
+resource "aws_iam_instance_profile" "ec2_read_keys-profile" {
+    name = "ec2_read_keys"
+    roles = ["${aws_iam_role.ec2_assume-role.name}"]
+}
+
+# fubar: I think this is redundant with the s3 bucket policy and ec2 instance profile
+## Render policy to allow EC2 instances to read SSH pubkeys
+#resource "template_file" "ec2_read_keys-template" {
+#    template = "${file("files/ec2_read_keys.json.tmpl")}"
+#    vars {
+#        key_bucket = "${var.ssh_pub_key_bucket}"
+#    }
+#}
+#
+## Add role policy to allow EC2 instances to read they key bucket
+#resource "aws_iam_role_policy" "ec2_read_keys-policy" {
+#    name = "ec2_read_keys-policy"
+#    role = "${aws_iam_role.ec2_assume-role.id}"
+#    policy = "${template_file.ec2_read_keys-template.rendered}"
+#}
+
+# Render policy to allow EC2 assumed role to read SSH pubkey bucket
+resource "template_file" "s3_read_pubkeys-template" {
+    template = "${file("files/s3_read_pubkeys.json.tmpl")}"
+    vars {
+        account_id = "${var.account_id}"
+        key_bucket = "${var.ssh_pub_key_bucket}"
+        ec2_role = "${aws_iam_role.ec2_assume-role.name}"
+    }
+}
+
+# Create bucket for SSH public keys
+resource "aws_s3_bucket" "ssh_pubkey-bucket" {
+    bucket = "${var.ssh_pub_key_bucket}"
+    acl = "private"
+    policy = "${template_file.s3_read_pubkeys-template.rendered}"
+    logging {
+        target_bucket = "${module.cloudtrail.bucket_id}"
+        target_prefix = "s3/${var.ssh_pub_key_bucket}/"
+    }
+    tags {
+        Name = "SSH public keys"
+    }
+}
 
