@@ -5,6 +5,11 @@ variable "account_id" {
     default = "154007893214"
 }
 
+variable "ssh_pub_key_bucket" {
+    description = "Name of the S3 bucket for SSH public keys"
+    default = "moz-mozreview-keys"
+}
+
 variable "tf_state_bucket" {
     description = "Name of the S3 bucket for Terraform remote state"
     default = "moz-mozreview-state"
