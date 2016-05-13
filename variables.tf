@@ -24,3 +24,13 @@ variable "tf_state_file" {
     description = "Name of the Terraform remote state file"
     default = "terraform.tfstate"
 }
+
+variable "centos7_amis" {
+    description = "Centos 7 (x86_64) with Updates HVM, rel 02/26/2016"
+    type = "map"
+    default = {
+        us-east-1 = "ami-6d1c2007"
+        us-west-1 = "ami-af4333cf"
+        us-west-2 = "ami-d2c924b2"
+    }
+}
