@@ -20,6 +20,25 @@ resource "aws_iam_account_password_policy" "strict" {
     allow_users_to_change_password = true
 }
 
+# Add manage_own_creds group
+resource "aws_iam_group" "manage_own_creds-group" {
+    name = "manage_own_creds"
+}
+
+# Create a policy that allows user to manage their own credentials
+resource "aws_iam_policy" "manage_own_credentialss-policy" {
+    name = "manage_own_credentials-policy"
+    description = "Allow users to manage their own credentials"
+    policy = "${file("files/manage_own_credentials.json")}"
+}
+
+# Attach manage_own_creds policy to group
+resource "aws_iam_policy_attachment" "manage_own_credentials-attach" {
+    name = "manage_own_credentials-attach"
+    groups = ["${aws_iam_group.manage_own_creds-group.name}"]
+    policy_arn = "${aws_iam_policy.manage_own_credentialss-policy.arn}"
+}
+
 # Add admin group
 resource "aws_iam_group" "admin-group" {
     name = "administrators"
