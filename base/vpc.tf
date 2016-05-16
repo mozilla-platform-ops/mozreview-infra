@@ -10,6 +10,48 @@ resource "aws_eip" "bastion-eip" {
     }
 }
 
+# Allow SSH access to bastion host
+resource "aws_security_group" "bastion_external-sg" {
+    name = "bastion_external-sg"
+    description = "Allow SSH to bastion host from all"
+    ingress {
+        from_port = 22
+        to_port = 22
+        protocol = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+    egress {
+        from_port = 0
+        to_port = 0
+        protocol = "-1"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+    tags {
+        Name = "bastion_external-sg"
+    }
+}
+
+# Allow all access from bastion host(s) to all resources
+resource "aws_security_group" "bastion_internal-sg" {
+    name = "bastion_internal-sg"
+    description = "Allow all access from bastion host"
+    ingress {
+        from_port = 0
+        to_port = 0
+        protocol = "-1"
+        security_groups = ["${aws_security_group.bastion_external-sg.id}"]
+    }
+    egress {
+        from_port = 0
+        to_port = 0
+        protocol = "-1"
+        security_groups = ["${aws_security_group.bastion_external-sg.id}"]
+    }
+    tags {
+        Name = "bastion_internal-sg"
+    }
+}
+
 # Define Primary VPC network
 resource "aws_vpc" "primary_vpc" {
     # cidr_block will change once determined by netops
