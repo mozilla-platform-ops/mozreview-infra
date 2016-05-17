@@ -25,6 +25,16 @@ variable "tf_state_file" {
     default = "terraform.tfstate"
 }
 
+variable "centos6_amis" {
+    description = "Centos 6 (x86_64) with Updates HVM, rel 02/26/2016"
+    type = "map"
+    default = {
+        us-east-1 = "ami-1c221e76"
+        us-west-1 = "ami-ac5f2fcc"
+        us-west-2 = "ami-05cf2265"
+    }
+}
+
 variable "centos7_amis" {
     description = "Centos 7 (x86_64) with Updates HVM, rel 02/26/2016"
     type = "map"
