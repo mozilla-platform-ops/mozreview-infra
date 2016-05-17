@@ -54,8 +54,8 @@ resource "aws_security_group" "bastion_internal-sg" {
 
 # Define Primary VPC network
 resource "aws_vpc" "primary_vpc" {
-    # cidr_block will change once determined by netops
-    cidr_block = "10.0.0.0/16"
+    # This is a NetOps sanctioned cidr block - see bug 1272453
+    cidr_block = "10.191.4.0/24"
 
     tags {
         Name = "Primary VPC"
@@ -109,22 +109,11 @@ resource "aws_security_group" "ssh_only-sg" {
     }
 }
 
-# Establish a primary route table
-resource "aws_route_table" "primary_route_table-rt" {
-    vpc_id = "${aws_vpc.primary_vpc.id}"
-    route {
-        cidr_block = "0.0.0.0/0"
-        gateway_id = "${aws_internet_gateway.primary_igw.id}"
-    }
-    tags {
-        Name = "Primary Route Table"
-    }
-}
-
-# Set primary_route_table-rt as Main route table
-resource "aws_main_route_table_association" "assosciate_primary_rt" {
-    vpc_id = "${aws_vpc.primary_vpc.id}"
-    route_table_id = "${aws_route_table.primary_route_table-rt.id}"
+# Add primary igw route
+resource "aws_route" "route_all_rt_rule" {
+    route_table_id = "${aws_vpc.primary_vpc.main_route_table_id}"
+    destination_cidr_block = "0.0.0.0/0"
+    gateway_id = "${aws_internet_gateway.primary_igw.id}"
 }
 
 # Establish a primary internet gateway
