@@ -23,7 +23,7 @@ resource "aws_vpn_connection" "vpc-vpn" {
     vpn_gateway_id = "${aws_vpn_gateway.vpc-vgw.id}"
     customer_gateway_id = "${aws_customer_gateway.vpc-cgw.id}"
     type = "ipsec.1"
-    static_routes_only = true
+    static_routes_only = false
     tags {
         Name = "${var.name}-vpn"
     }
