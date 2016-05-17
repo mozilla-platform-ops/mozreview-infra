@@ -125,29 +125,17 @@ resource "aws_internet_gateway" "primary_igw" {
     }
 }
 
+# Setup VPN connection SCL3 <--> VPC
+module "vpn" {
+  source = "../modules/tf_aws_vpn"
 
-# Establish a vpn gateway on the primary VPC
-#resource "aws_vpn_gateway" "primary_vpn_gateway" {
-#    vpc_id = "${aws_vpc.primary_vpc.id}"
-#}
+  name = "mozreview"
+  vpc_id = "${aws_vpc.primary_vpc.id}"
 
-# Setup a customer gateway dedicated to SCL3
-#resource "aws_customer_gateway" "customer_gateway_SCL3" {
-#    bgp_asn = 60000
-#    ip_address = "10.0.0.1"
-#    type = "ipsec.1"
-#}
+  main_route_table_id = "${aws_vpc.primary_vpc.main_route_table_id}"
 
-# Connect the SCL3 customer gateway to the Primary VPC
-#resource "aws_vpn_connection" "primary_vpn_connection" {
-#    vpn_gateway_id = "${aws_vpn_gateway.primary_vpn_gateway.id}"
-#    customer_gateway_id = "${aws_customer_gateway.customer_gateway_SCL3.id}"
-#    type = "ipsec.1"
-#    static_routes_only = false
-#
-#    tags {
-#        Name = "PRIMARY <-> SCL3 VPN"
-#    }
-#}
-
+  vpn_bgp_asn = "65022"
+  vpn_ip_address = "63.245.214.100"
+  vpn_dest_cidr_block = "10.0.0.0/8"
+}
 
