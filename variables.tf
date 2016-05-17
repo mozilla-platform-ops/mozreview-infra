@@ -34,3 +34,13 @@ variable "centos7_amis" {
         us-west-2 = "ami-d2c924b2"
     }
 }
+
+variable "centos6_amis" {
+    description = "Centos 6 (x86_64) with Updates HVM, rel 02/26/2016"
+    type = "map"
+    default = {
+        us-east-1 = "ami-1c221e76"
+        us-west-1 = "ami-05cf2265"
+        us-west-2 = "ami-ac5f2fcc"
+    }
+}
