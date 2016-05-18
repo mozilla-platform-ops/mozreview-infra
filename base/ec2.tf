@@ -28,8 +28,8 @@ resource "aws_autoscaling_group" "bastion-asg" {
         propagate_at_launch = true
     }
     tag {
-        key = "Type"
-        value = "autoscale instance"
+        key = "EIP"
+        value = "${aws_eip.bastion-eip.public_ip}"
         propagate_at_launch = true
     }
 }
