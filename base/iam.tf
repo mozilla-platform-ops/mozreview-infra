@@ -24,10 +24,32 @@ resource "aws_iam_role" "ec2_assume-role" {
     assume_role_policy = "${file("files/ec2_assume.json")}"
 }
 
+# Allow bastion hosts to AssumeRole
+resource "aws_iam_role" "ec2_bastion-role" {
+    name = "ec2_bastion"
+    assume_role_policy = "${file("files/ec2_assume.json")}"
+}
+
+# Allow bastion hosts to manage their Elastic IP
+resource "aws_iam_role_policy" "ec2_bastion-policy" {
+    name = "ec2_bastion-policy"
+    role = "${aws_iam_role.ec2_bastion-role.id}"
+    policy = "${file("files/ec2_manage_bastion_EIP.json")}"
+}
+
 # Create instance profile for EC2 instances to assume role
 resource "aws_iam_instance_profile" "ec2_read_keys-profile" {
     name = "ec2_read_keys"
     roles = ["${aws_iam_role.ec2_assume-role.name}"]
+}
+
+# Create instance profile for bastion hosts to manage EIP
+resource "aws_iam_instance_profile" "ec2_bastion-profile" {
+    name = "ec2_bastion"
+    roles = [
+        "${aws_iam_role.ec2_bastion-role.name}",
+        "${aws_iam_role.ec2_assume-role.name}"
+    ]
 }
 
 # Create a policy that requires multifactor authentication
