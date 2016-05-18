@@ -28,7 +28,7 @@ resource "aws_route_table" "private" {
 resource "aws_subnet" "private" {
   vpc_id = "${aws_vpc.mod.id}"
   cidr_block = "${element(split(",", var.private_subnets), count.index)}"
-  availability_zone = "${element(split(",", var.azs), count.index)}"
+  availability_zone = "${element(split(",", var.azs_private), count.index)}"
   count = "${length(compact(split(",", var.private_subnets)))}"
   tags { Name = "${var.name}-private" }
 }
@@ -36,7 +36,7 @@ resource "aws_subnet" "private" {
 resource "aws_subnet" "public" {
   vpc_id = "${aws_vpc.mod.id}"
   cidr_block = "${element(split(",", var.public_subnets), count.index)}"
-  availability_zone = "${element(split(",", var.azs), count.index)}"
+  availability_zone = "${element(split(",", var.azs_public), count.index)}"
   count = "${length(compact(split(",", var.public_subnets)))}"
   tags { Name = "${var.name}-public" }
 
