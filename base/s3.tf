@@ -33,7 +33,8 @@ resource "template_file" "s3_read_pubkeys-template" {
     vars {
         account_id = "${var.account_id}"
         key_bucket = "${var.ssh_pub_key_bucket}"
-        ec2_role = "${aws_iam_role.ec2_assume-role.name}"
+        ec2_assume_role = "${aws_iam_role.ec2_assume-role.name}"
+        ec2_bastion_role = "${aws_iam_role.ec2_bastion-role.name}"
     }
 }
 

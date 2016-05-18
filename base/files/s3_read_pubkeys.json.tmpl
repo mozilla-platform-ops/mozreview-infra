@@ -5,7 +5,10 @@
             "Sid": "AllowEC2ToReadKeyBucket",
             "Effect": "Allow",
             "Principal": {
-                "AWS": "arn:aws:iam::${account_id}:role/${ec2_role}"
+                "AWS": [
+                    "arn:aws:iam::${account_id}:role/${ec2_assume_role}",
+                    "arn:aws:iam::${account_id}:role/${ec2_bastion_role}"
+                ]
             },
             "Action": "s3:ListBucket",
             "Resource": "arn:aws:s3:::${key_bucket}"
@@ -14,7 +17,10 @@
             "Sid": "AllowEC2ToReadKeyBucketObjects",
             "Effect": "Allow",
             "Principal": {
-                "AWS": "arn:aws:iam::${account_id}:role/${ec2_role}"
+                "AWS": [
+                    "arn:aws:iam::${account_id}:role/${ec2_assume_role}",
+                    "arn:aws:iam::${account_id}:role/${ec2_bastion_role}"
+                ]
             },
             "Action": [
                 "s3:Get*",
