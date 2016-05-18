@@ -5,7 +5,7 @@ resource "aws_launch_configuration" "bastion-lc" {
     image_id = "${lookup(var.centos7_amis, var.region)}"
     key_name = "klibby@mozilla.com"
     security_groups = ["${aws_security_group.bastion_external-sg.id}"]
-    iam_instance_profile = "${aws_iam_instance_profile.ec2_read_keys-profile.arn}"
+    iam_instance_profile = "${aws_iam_instance_profile.ec2_bastion-profile.arn}"
     user_data = "${file("files/bastion-userdata.sh")}"
     lifecycle {
         create_before_destroy = true
