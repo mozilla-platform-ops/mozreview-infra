@@ -4,8 +4,8 @@
             "Effect": "Allow",
             "Action": [
                 "ec2:AssociateAddress",
-                "ec2:DescribeAddresses*",
-                "ec2:DescribeTags*",
+                "ec2:DescribeAddresses",
+                "ec2:DescribeTags"
             ],
             "Resource": "*"
         }
