@@ -18,7 +18,7 @@ resource "aws_iam_group" "manage_own_creds-group" {
     name = "manage_own_creds"
 }
 
-# Allow EC2 to assume role for further actions
+# Allow EC2 to assume role to read SSH pub key bucket (see files/s3_read_pubkeys.json.tmpl)
 resource "aws_iam_role" "ec2_assume-role" {
     name = "ec2_assume_role"
     assume_role_policy = "${file("files/ec2_assume.json")}"
