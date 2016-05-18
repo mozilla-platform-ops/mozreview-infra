@@ -8,9 +8,33 @@ resource "aws_iam_account_password_policy" "strict" {
     allow_users_to_change_password = true
 }
 
+# Add admin group
+resource "aws_iam_group" "admin-group" {
+    name = "administrators"
+}
+
 # Add manage_own_creds group
 resource "aws_iam_group" "manage_own_creds-group" {
     name = "manage_own_creds"
+}
+
+# Allow EC2 to assume role for further actions
+resource "aws_iam_role" "ec2_assume-role" {
+    name = "ec2_assume_role"
+    assume_role_policy = "${file("files/ec2_assume.json")}"
+}
+
+# Create instance profile for EC2 instances to assume role
+resource "aws_iam_instance_profile" "ec2_read_keys-profile" {
+    name = "ec2_read_keys"
+    roles = ["${aws_iam_role.ec2_assume-role.name}"]
+}
+
+# Create a policy that requires multifactor authentication
+resource "aws_iam_policy" "require_mfa-policy" {
+    name = "require_mfa-policy"
+    description = "Require use of Multifactor Authentication"
+    policy = "${file("files/RequireMFA.json")}"
 }
 
 # Create a policy that allows user to manage their own credentials
@@ -27,18 +51,6 @@ resource "aws_iam_policy_attachment" "manage_own_credentials-attach" {
     policy_arn = "${aws_iam_policy.manage_own_credentialss-policy.arn}"
 }
 
-# Add admin group
-resource "aws_iam_group" "admin-group" {
-    name = "administrators"
-}
-
-# Create a policy that requires multifactor authentication
-resource "aws_iam_policy" "require_mfa-policy" {
-    name = "require_mfa-policy"
-    description = "Require use of Multifactor Authentication"
-    policy = "${file("files/RequireMFA.json")}"
-}
-
 # Attach MFA policy to admin group
 resource "aws_iam_policy_attachment" "require_mfa-attach" {
     name = "require_mfa-attach"
@@ -51,17 +63,5 @@ resource "aws_iam_policy_attachment" "admin_access-attach" {
     name = "admin_access-attach"
     groups = ["${aws_iam_group.admin-group.name}"]
     policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
-}
-
-# Allow EC2 to assume role for further actions
-resource "aws_iam_role" "ec2_assume-role" {
-    name = "ec2_assume_role"
-    assume_role_policy = "${file("files/ec2_assume.json")}"
-}
-
-# Create instance profile for EC2 instances to assume role
-resource "aws_iam_instance_profile" "ec2_read_keys-profile" {
-    name = "ec2_read_keys"
-    roles = ["${aws_iam_role.ec2_assume-role.name}"]
 }
 
