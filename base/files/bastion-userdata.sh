@@ -103,7 +103,7 @@ cat <<EOF > $EIP_SCRIPT
 #!/usr/bin/env bash
 INSTANCE_ID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)
 REGION=$(curl -s http://169.254.169.254/latest/dynamic/instance-identity/document | grep region | awk -F\" '{print $4}')
-VALID_IPS=$(aws --region \$REGION ec2 describe-tags --filters "Name=resource-id,Values=\$INSTANCE_ID" "Name=key,Values=EIP" | jq -r '.Tags[].Value')
+VALID_IPS=\$(aws --output json --region \$REGION ec2 describe-tags --filters "Name=resource-id,Values=\$INSTANCE_ID" "Name=key,Values=EIP" | jq -r '.Tags[].Value')
 
 aws-ec2-assign-elastic-ip --region \$REGION --valid-ips \$VALID_IPS
 
