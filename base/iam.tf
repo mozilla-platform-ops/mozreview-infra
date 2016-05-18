@@ -18,6 +18,8 @@ resource "aws_iam_group" "manage_own_creds-group" {
     name = "manage_own_creds"
 }
 
+# NB: when adding a new ec2_assume-like role, also add it to s3_read_pubkeys
+
 # Allow EC2 to assume role to read SSH pub key bucket (see files/s3_read_pubkeys.json.tmpl)
 resource "aws_iam_role" "ec2_assume-role" {
     name = "ec2_assume_role"
@@ -37,6 +39,9 @@ resource "aws_iam_role_policy" "ec2_bastion-policy" {
     policy = "${file("files/ec2_manage_bastion_EIP.json")}"
 }
 
+# NB: AWS does not support multiple roles per instance profile; instead, apply
+# multiple policies to a single roll. cf https://github.com/hashicorp/terraform/issues/3851
+
 # Create instance profile for EC2 instances to assume role
 resource "aws_iam_instance_profile" "ec2_read_keys-profile" {
     name = "ec2_read_keys"
@@ -46,10 +51,7 @@ resource "aws_iam_instance_profile" "ec2_read_keys-profile" {
 # Create instance profile for bastion hosts to manage EIP
 resource "aws_iam_instance_profile" "ec2_bastion-profile" {
     name = "ec2_bastion"
-    roles = [
-        "${aws_iam_role.ec2_bastion-role.name}",
-        "${aws_iam_role.ec2_assume-role.name}"
-    ]
+    roles = ["${aws_iam_role.ec2_bastion-role.name}"]
 }
 
 # Create a policy that requires multifactor authentication
