@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 # Caveat: any variable inside curly braces will be interpolated by terraform!
 #
+# Install AWS CLI and useful tools 
+# Create script and cron job to auto-update SSH pub keys
+# Create and run script to associate Elastic IP
+
 # bootstrap to make installing EPEL repo easy
 function epel_bootstrap() {
     cat <<EOM > /etc/yum.repos.d/epel-bootstrap.repo
@@ -20,27 +24,28 @@ if [ -f /etc/centos-release ]; then
     SSH_USER="centos"
     epel_bootstrap
     yum update -y
-    yum install -y python-pip jq
+    yum install -y python-pip jq curl
 elif [ -f /etc/redhat-release ]; then
     SSH_USER="ec2-user"
     epel_bootstrap
     yum update -y
-    yum install -y python-pip jq
+    yum install -y python-pip jq curl
 elif [ -f /etc/debian_version ]; then
     SSH_USER="ubuntu"
     apt-get update -y
-    apt-get install -y python-pip jq
+    apt-get install -y python-pip jq curl
 fi
 
-## Install awscli
-pip install --upgrade awscli
-
-## Create update script
-SCRIPT="/home/$SSH_USER/bin/update_ssh_keys.sh"
+## Install awscli and aws-ec2-assign-elastic-ip
+pip install --upgrade awscli aws-ec2-assign-elastic-ip
 
 mkdir /home/$SSH_USER/bin
+
+# Create SSH pub keys update script
+SSH_SCRIPT="/home/$SSH_USER/bin/update_ssh_keys.sh"
+
 # ---[ start of script creation ]---
-cat <<EOF > $SCRIPT
+cat <<EOF > $SSH_SCRIPT
 #!/usr/bin/env bash
 BUCKET="moz-mozreview-keys"
 MARKER="# KEYS_BELOW_WILL_BE_UPDATED_BY_TERRAFORM"
@@ -78,16 +83,37 @@ EOF
 # ---[ end of script creation ]---
 
 ## Set perms
-chown -R $SSH_USER:$SSH_USER /home/$SSH_USER/bin
-chmod 755 $SCRIPT
+chmod 755 $SSH_SCRIPT
 
 ## Run script
-su $SSH_USER -c /home/$SSH_USER/bin/update_ssh_keys.sh
+su $SSH_USER -c $SSH_SCRIPT
 
 ## Add cronjob
 # centos crontab doesn't allow STDIN input
 if [ ! -f /etc/cron.d/update-ssh-keys ]; then
-    echo "*/10 * * * * $SSH_USER $SCRIPT" > /etc/cron.d/update-ssh-keys
+    echo "*/10 * * * * $SSH_USER $SSH_SCRIPT" > /etc/cron.d/update-ssh-keys
     chmod 644 /etc/cron.d/update-ssh-keys
 fi
+
+# Create EIP associate script
+EIP_SCRIPT="/home/$SSH_USER/bin/associate_eip.sh"
+
+# ---[ start of script creation ]---
+cat <<EOF > $EIP_SCRIPT
+#!/usr/bin/env bash
+INSTANCE_ID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)
+REGION=$(curl -s http://169.254.169.254/latest/dynamic/instance-identity/document | grep region | awk -F\" '{print $4}')
+VALID_IPS=$(aws --region $REGION ec2 describe-tags --filters "Name=resource-id,Values=$INSTANCE_ID" "Name=key,Values=EIP" | jq -r '.Tags[].Value')
+
+aws-ec2-assign-elastic-ip --region $REGION --valid-ips $VALID_IPS
+
+EOF
+# ---[ end of script creation ]---
+
+## Set perms
+chmod 755 $EIP_SCRIPT
+
+## Run script
+su $SSH_USER -c $EIP_SCRIPT
+
 exit
