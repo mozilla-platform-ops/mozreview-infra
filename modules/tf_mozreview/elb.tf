@@ -7,6 +7,8 @@ resource "aws_elb" "mozreview_web_elb" {
 
     subnets = ["${aws_subnet.elb_subnet.*.id}"]
 
+
+# TODO: Uploud SSL cert and flip to https
     listener {
         instance_port = 8000
         instance_protocol = "http"
@@ -14,17 +16,22 @@ resource "aws_elb" "mozreview_web_elb" {
         lb_protocol = "http"
     }
 
-  instances = ["${aws_instance.web_ec2_instance.*.id}"]
-  cross_zone_load_balancing = true
-  idle_timeout = 400
-  connection_draining = true
-  connection_draining_timeout = 400
+    instances = ["${aws_instance.web_ec2_instance.*.id}"]
+    cross_zone_load_balancing = true
+    idle_timeout = 400
+    connection_draining = true
+    connection_draining_timeout = 400
 
-# TODO: Logging
+    # Logging
+    access_logs {
+        bucket = "${var.logging_bucket}"
+        bucket_prefix = "elb/web-${var.env}"
+        interval = 60
+    }
+
 # TODO: Health Checks
-
-  tags {
-    Name = "${var.env}-elb"
-  }
+    tags {
+        Name = "${var.env}-elb"
+    }
 }
 
