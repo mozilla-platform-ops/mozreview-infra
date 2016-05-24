@@ -76,7 +76,6 @@ resource "aws_launch_configuration" "bastion-lc" {
 }
 
 resource "aws_autoscaling_group" "bastion-asg" {
-    depends_on = ["${aws_launch_configuration.bastion-lc.id}"]
     name = "${var.name}-asg"
     vpc_zone_identifier = ["${split(",", var.public_subnet_ids)}"]
     max_size = 1
