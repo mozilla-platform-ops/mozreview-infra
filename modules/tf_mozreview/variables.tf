@@ -8,9 +8,9 @@ variable "vpc_cidr" { }
 variable "web_instance_type" {}
 variable "web_subnets" {}
 variable "web_azs" {}
-variable "web_name" {}
+variable "web_instance_name" {}
 variable "web_ami_id" {}
-variable "number_of_instances" {}
+variable "web_instances_per_subnet" {}
 
 variable "elb_subnets" {}
 variable "elb_azs" {}
