@@ -44,3 +44,15 @@ variable "centos7_amis" {
         us-west-2 = "ami-d2c924b2"
     }
 }
+
+# These availablity zones are specific to the mozreview account
+# In the future, this may be dynamically determined
+variable "availablity_zones" {
+    description = "A list of availablity zones per US region"
+    type = "map"
+    default = {
+        us-east-1 = "us-east-1a,us-east-1b,us-east-1d,us-east-1e"
+        us-west-1 = "us-west-1b,us-west-1c"
+        us-west-2 = "us-west-2a,us-west-2b,us-west-2c"
+    }
+}
