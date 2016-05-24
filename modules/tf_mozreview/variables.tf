@@ -19,3 +19,6 @@ variable "elb_azs" {}
 variable "user_data" {
     default = ""
 }
+
+variable "logging_bucket" {}
+
