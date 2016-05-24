@@ -21,14 +21,14 @@ resource "aws_elb" "mozreview_web_elb" {
     idle_timeout = 400
     connection_draining = true
     connection_draining_timeout = 400
-
+/*
     # Logging
     access_logs {
         bucket = "${var.logging_bucket}"
         bucket_prefix = "elb/web-${var.env}"
         interval = 60
     }
-
+*/
 # TODO: Health Checks
     tags {
         Name = "${var.env}-elb"
