@@ -2,7 +2,10 @@
 # by other terraform environments.  Such as vpcs and security groups
 
 # EC2 instance profile to read key bucket
-output "pubkey_instance_profile" {
+output "pubkey_instance_profile_name" {
+    value = "${aws_iam_instance_profile.ec2_read_keys-profile.name}"
+}
+output "pubkey_instance_profile_arn" {
     value = "${aws_iam_instance_profile.ec2_read_keys-profile.arn}"
 }
 
