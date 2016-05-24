@@ -52,3 +52,11 @@ resource "aws_s3_bucket" "ssh_pubkey-bucket" {
     }
 }
 
+# Manage SSH public keys
+resource "aws_s3_bucket_object" "ssh_pubkeys" {
+    bucket = "${var.ssh_pub_key_bucket}"
+    count = "${length(split(",", var.ssh_key_names))}"
+    key = "${element(split(",", var.ssh_key_names), count.index)}"
+    content = "${file("files/pubkeys/${element(split(",", var.ssh_key_names), count.index)}")}"
+    depends_on = ["aws_s3_bucket.ssh_pubkey-bucket"]
+}

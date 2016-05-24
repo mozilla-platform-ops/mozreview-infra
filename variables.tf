@@ -10,6 +10,11 @@ variable "ssh_pub_key_bucket" {
     default = "moz-mozreview-keys"
 }
 
+variable "ssh_key_names" {
+    description = "List of SSH pub keys to manage in S3 bucket"
+    default = "klibby@mozilla.com,jwatkins@mozilla.com"
+}
+
 variable "tf_state_bucket" {
     description = "Name of the S3 bucket for Terraform remote state"
     default = "moz-mozreview-state"
