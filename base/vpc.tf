@@ -2,13 +2,13 @@
 This file defines the global VPC configuration including VPNs
 */
 
-# Define Primary VPC network
+# Define VPC for vpn to scl3
 resource "aws_vpc" "primary_vpc" {
     # This is a NetOps sanctioned cidr block - see bug 1272453
     cidr_block = "10.191.4.0/24"
 
     tags {
-        Name = "Primary VPC"
+        Name = "vpn-vpc"
     }
 }
 
@@ -32,7 +32,7 @@ resource "aws_security_group" "allow_all-sg" {
     }
 
     tags {
-        Name = "Allow all"
+        Name = "allow_all-sg"
     }
 }
 
@@ -49,6 +49,7 @@ resource "aws_internet_gateway" "primary_igw" {
 
     tags {
         Name = "Primary Internet Gateway"
+        Name = "vpn_vpc-igw"
     }
 }
 
