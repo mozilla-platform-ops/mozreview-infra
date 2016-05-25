@@ -10,6 +10,12 @@ variable "base_bucket" {
     default = "moz-mozreview"
 }
 
+variable "user_data_scripts" {
+    description = "List of user-data scripts to manage in S3 bucket"
+    default = "associate-eip"
+    # ssh-pubkeys.tmpl handled via template_file resource in base/s3.tf
+}
+
 variable "ssh_pub_key_bucket" {
     description = "Name of the S3 bucket for SSH public keys"
     default = "moz-mozreview-keys"
