@@ -12,6 +12,29 @@ resource "aws_vpc" "primary_vpc" {
     }
 }
 
+resource "aws_security_group" "bastion_to_vpn-sg" {
+    name = "bastion_to_vpn-sg"
+    description = "Allow all access from bastion host to VPN VPC"
+    vpc_id = "${aws_vpc.primary_vpc.id}"
+    ingress {
+        from_port = 0
+        to_port = 0
+        protocol = "-1"
+        security_groups = ["${module.bastion.external_sg_id}"]
+        #security_groups = ["${terraform_remote_state.mozreview_base.output.allow_bastion_sg}"]
+    }
+    egress {
+        from_port = 0
+        to_port = 0
+        protocol = "-1"
+        security_groups = ["${module.bastion.external_sg_id}"]
+        #security_groups = ["${terraform_remote_state.mozreview_base.output.allow_bastion_sg}"]
+    }
+    tags {
+        Name = "bastion_to_vpn-sg"
+    }
+}
+
 # This security group should only be used for debugging
 resource "aws_security_group" "allow_all-sg" {
     name = "allow_all-sg"
@@ -74,4 +97,17 @@ module "bastion_vpc" {
     cidr = "${var.bastion_cidr}"
     public_subnets = "${var.bastion_cidr}"
     azs_public = "us-west-2a"
+}
+
+module "bastion_to_vpn-vpx" {
+    source = "../modules/tf_vpc_peer"
+
+    name = "bastion_to_vpn"
+    requester_vpc_id = "${module.bastion_vpc.vpc_id}"
+    requester_route_table_id = "${module.bastion_vpc.public_route_table_id}"
+    requester_cidr_block = "${var.bastion_cidr}"
+    peer_vpc_id = "${aws_vpc.primary_vpc.id}"
+    peer_route_table_id = "${aws_vpc.primary_vpc.main_route_table_id}"
+    peer_cidr_block = "${aws_vpc.primary_vpc.cidr_block}"
+    peer_account_id = "${var.account_id}"
 }
