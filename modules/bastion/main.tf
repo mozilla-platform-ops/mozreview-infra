@@ -23,9 +23,9 @@ output "external_sg_id" {
 # Create EIP for bastion host (to be associated later)
 resource "aws_eip" "bastion-eip" {
     vpc = true
-    lifecycle {
-        prevent_destroy = true
-    }
+    #lifecycle {
+    #    prevent_destroy = true
+    #}
 }
 
 # Allow SSH access to bastion host
@@ -53,7 +53,7 @@ resource "aws_security_group" "bastion_external-sg" {
 resource "template_file" "user_data" {
     template = "${file("${path.module}/user_data.tmpl")}"
     vars {
-        s3_key_bucket = "${var.s3_key_bucket}"
+        s3_key_bucket = "${var.s3_bucket}"
         addl_user_data = "${var.addl_user_data}"
     }
     lifecycle {

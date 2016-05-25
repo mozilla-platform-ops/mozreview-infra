@@ -1,12 +1,11 @@
 #!/usr/bin/env bash
 # Caveat: any variable inside curly braces will be interpolated by terraform!
 # 
-# Install AWS CLI and useful tools 
-# Create script and cron job to auto-update SSH pub keys
-# Create and run script to associate Elastic IP
-set -euf -o pipefail
+# Sets up YUM EPEL repo, installs prereqs
 
-# bootstrap to make installing EPEL repo easy
+BUCKET=${s3_bucket}
+ADDL_USER_DATA=${addl_user_data}
+
 function epel_bootstrap() {
     cat <<EOM > /etc/yum.repos.d/epel-bootstrap.repo
 [epel]
@@ -20,98 +19,28 @@ EOM
     rm -f /etc/yum.repos.d/epel-bootstrap.repo
 }
 
-## Test for OS, install dependencies, and determine SSH_USER
+## Test for OS, install dependencies
 if [ -f /etc/centos-release ]; then
-    SSH_USER="centos"
     epel_bootstrap
     yum update -y
     yum install -y python-pip jq curl
 elif [ -f /etc/redhat-release ]; then
-    SSH_USER="ec2-user"
     epel_bootstrap
     yum update -y
     yum install -y python-pip jq curl
 elif [ -f /etc/debian_version ]; then
-    SSH_USER="ubuntu"
     apt-get update -y
     apt-get install -y python-pip jq curl
 fi
 
-## Install awscli and aws-ec2-assign-elastic-ip
-pip install --upgrade awscli aws-ec2-assign-elastic-ip
+## Install awscli
+pip install --upgrade awscli
 
-mkdir /home/$SSH_USER/bin
+TMPDIR=$(mktemp -d)
 
-# Create SSH pub keys update script
-SSH_SCRIPT="/home/$SSH_USER/bin/update_ssh_keys.sh"
-
-# ---[ start of script creation ]---
-cat <<EOF > $SSH_SCRIPT
-#!/usr/bin/env bash
-BUCKET="${s3_key_bucket}"
-MARKER="# KEYS_BELOW_WILL_BE_UPDATED_BY_TERRAFORM"
-
-umask 0077
-cd ~/.ssh
-
-## Fetch keys
-if [ ! -d pub_key_files ]; then
-    mkdir pub_key_files
-fi
-aws s3 sync --delete s3://\$BUCKET/ pub_key_files/
-
-## Set marker
-if ! grep -Fxq "\$MARKER" authorized_keys;
-then
-  echo "\$MARKER" >> authorized_keys
-fi
-
-## Truncate to marker, append new keys, using temp file
-TEMP_KEYS=\$(mktemp authorized_keys.XXXXXX)
-sed "/^\$MARKER/q" authorized_keys > \$TEMP_KEYS
-for f in pub_key_files/*
+for SCRIPT in $(echo "$ADDL_USER_DATA" | tr , ' ')
 do
-    (cat "\$f"; echo) >> \$TEMP_KEYS
+    aws s3 cp s3://$BUCKET/user-data/$SCRIPT $TMPDIR
+    chmod 755 $TMPDIR/$SCRIPT
+    $TMPDIR/$SCRIPT
 done
-sed -i '/^$/d' \$TEMP_KEYS
-
-mv \$TEMP_KEYS authorized_keys
-EOF
-# ---[ end of script creation ]---
-
-## Set perms
-chmod 755 $SSH_SCRIPT
-
-## Run script
-su $SSH_USER -c $SSH_SCRIPT
-
-## Add cronjob
-# centos crontab doesn't allow STDIN input
-if [ ! -f /etc/cron.d/update-ssh-keys ]; then
-    echo "*/10 * * * * $SSH_USER $SSH_SCRIPT" > /etc/cron.d/update-ssh-keys
-    chmod 644 /etc/cron.d/update-ssh-keys
-fi
-
-# Create EIP associate script
-EIP_SCRIPT="/home/$SSH_USER/bin/associate_eip.sh"
-
-# ---[ start of script creation ]---
-cat <<EOF > $EIP_SCRIPT
-#!/usr/bin/env bash
-INSTANCE_ID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)
-REGION=$(curl -s http://169.254.169.254/latest/dynamic/instance-identity/document | grep region | awk -F\" '{print $4}')
-VALID_IPS=\$(aws --output json --region \$REGION ec2 describe-tags --filters "Name=resource-id,Values=\$INSTANCE_ID" "Name=key,Values=EIP" | jq -r '.Tags[].Value')
-
-aws-ec2-assign-elastic-ip --region \$REGION --valid-ips \$VALID_IPS
-
-EOF
-# ---[ end of script creation ]---
-
-## Set perms
-chmod 755 $EIP_SCRIPT
-
-## Run script
-su $SSH_USER -c $EIP_SCRIPT
-
-# Append additional user-data script
-${addl_user_data}
