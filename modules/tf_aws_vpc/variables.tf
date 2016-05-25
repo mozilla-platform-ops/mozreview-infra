@@ -28,7 +28,7 @@ variable "azs_private" {
 
 variable "enable_dns_hostnames" {
   description = "True if you want to use private DNS within the VPC"
-  default = false
+  default = true
 }
 
 variable "enable_dns_support" {
