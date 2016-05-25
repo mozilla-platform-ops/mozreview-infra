@@ -5,6 +5,11 @@ variable "account_id" {
     default = "154007893214"
 }
 
+variable "base_bucket" {
+    description = "Name of the S3 bucket for SSH public keys"
+    default = "moz-mozreview"
+}
+
 variable "ssh_pub_key_bucket" {
     description = "Name of the S3 bucket for SSH public keys"
     default = "moz-mozreview-keys"
