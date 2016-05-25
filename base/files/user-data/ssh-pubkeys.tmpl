@@ -3,20 +3,14 @@
 #
 # Create script and cron job to auto-update SSH pub keys
 
-## Test for OS, install dependencies, and determine SSH_USER
+## determine SSH_USER
 if [ -f /etc/centos-release ]; then
     SSH_USER="centos"
-    yum install -y python-pip jq curl
 elif [ -f /etc/redhat-release ]; then
     SSH_USER="ec2-user"
-    yum install -y python-pip jq curl
 elif [ -f /etc/debian_version ]; then
     SSH_USER="ubuntu"
-    apt-get install -y python-pip jq curl
 fi
-
-## Install awscli
-pip install --upgrade awscli
 
 mkdir /home/$SSH_USER/bin
 

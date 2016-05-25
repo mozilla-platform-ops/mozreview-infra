@@ -3,17 +3,8 @@
 #
 # Create and run script to associate Elastic IP
 
-## Test for OS, install dependencies
-if [ -f /etc/centos-release ]; then
-    yum install -y python-pip jq curl
-elif [ -f /etc/redhat-release ]; then
-    yum install -y python-pip jq curl
-elif [ -f /etc/debian_version ]; then
-    apt-get install -y python-pip jq curl
-fi
-
-## Install awscli and aws-ec2-assign-elastic-ip
-pip install --upgrade awscli aws-ec2-assign-elastic-ip
+## Install aws-ec2-assign-elastic-ip
+pip install --upgrade aws-ec2-assign-elastic-ip
 
 mkdir -p /root/bin
 
