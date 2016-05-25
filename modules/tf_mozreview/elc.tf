@@ -23,7 +23,7 @@ resource "aws_elasticache_cluster" "mozreview-elc" {
     az_mode = "cross-az"
     subnet_group_name = "${aws_elasticache_subnet_group.mozreview-elc-subnet-group.name}"
     availability_zones = ["${split(",", var.elc_azs)}"]
-    maintenance_window = "Sun:08:00-Sun:08:30"
+    maintenance_window = "Sun:08:00-Sun:09:00"
 
     parameter_group_name = "${aws_elasticache_parameter_group.mozreview-elc-pg.name}"
 }
