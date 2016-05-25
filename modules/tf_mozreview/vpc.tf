@@ -56,6 +56,15 @@ resource "aws_subnet" "elb_subnet" {
   map_public_ip_on_launch = true
 }
 
+# Setup private subnets for rds
+resource "aws_subnet" "rds_subnet" {
+  vpc_id = "${aws_vpc.mozreview_vpc.id}"
+  cidr_block = "${element(split(",", var.rds_subnets), count.index)}"
+  availability_zone = "${element(split(",", var.rds_azs), count.index)}"
+  count = "${length(compact(split(",", var.rds_subnets)))}"
+#  tags { Name = "${var.name}-public" }
+#TODO: tags
+}
 
 resource "aws_route_table_association" "web" {
   count = "${length(compact(split(",", var.web_subnets)))}"
