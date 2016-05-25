@@ -13,7 +13,7 @@ variable "s3_key_bucket"       { }
 variable "addl_user_data"      { default = "" }
 
 output "bastion_ip" {
-    value = "${aws_eip.bastion-eip.public_dns}"
+    value = "${aws_eip.bastion-eip.public_ip}"
 }
 
 output "external_sg_id" {
@@ -53,7 +53,7 @@ resource "aws_security_group" "bastion_external-sg" {
 resource "template_file" "user_data" {
     template = "${file("${path.module}/user_data.tmpl")}"
     vars {
-        s3_key_bucket = "${var.s3_bucket}"
+        s3_bucket = "${var.s3_key_bucket}"
         addl_user_data = "${var.addl_user_data}"
     }
     lifecycle {
