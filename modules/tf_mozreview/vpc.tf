@@ -66,6 +66,17 @@ resource "aws_subnet" "rds_subnet" {
 #TODO: tags
 }
 
+# Setup private subnets for elasticache
+resource "aws_subnet" "elc_subnet" {
+  vpc_id = "${aws_vpc.mozreview_vpc.id}"
+  cidr_block = "${element(split(",", var.elc_subnets), count.index)}"
+  availability_zone = "${element(split(",", var.elc_azs), count.index)}"
+  count = "${length(compact(split(",", var.elc_subnets)))}"
+#  tags { Name = "${var.name}-public" }
+#TODO: tags
+}
+
+
 resource "aws_route_table_association" "web" {
   count = "${length(compact(split(",", var.web_subnets)))}"
   subnet_id = "${element(aws_subnet.web_subnet.*.id, count.index)}"

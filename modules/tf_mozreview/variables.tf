@@ -18,3 +18,8 @@ variable "rds_subnets" {}
 variable "rds_azs" {}
 variable "rds_instance_class" {}
 variable "logging_bucket" {}
+variable "memcached_instance_type" {}
+variable "elc_subnets" {}
+variable "elc_azs" {}
+variable "num_memcached_nodes" {}
+
