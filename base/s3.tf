@@ -35,7 +35,7 @@ resource "template_file" "s3_read_pubkeys-template" {
         account_id = "${var.account_id}"
         key_bucket = "${var.ssh_pub_key_bucket}"
         ec2_assume_role = "${aws_iam_role.ec2_assume-role.name}"
-        ec2_bastion_role = "${aws_iam_role.ec2_bastion-role.name}"
+        ec2_manage_eip_role = "${aws_iam_role.ec2_manage_eip-role.name}"
     }
 }
 
@@ -69,7 +69,7 @@ resource "template_file" "s3_base_bucket-template" {
         account_id = "${var.account_id}"
         key_bucket = "${var.base_bucket}"
         ec2_assume_role = "${aws_iam_role.ec2_assume-role.name}"
-        ec2_bastion_role = "${aws_iam_role.ec2_bastion-role.name}"
+        ec2_manage_eip_role = "${aws_iam_role.ec2_manage_eip-role.name}"
     }
 }
 

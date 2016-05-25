@@ -8,6 +8,13 @@ output "pubkey_instance_profile_name" {
 output "pubkey_instance_profile_arn" {
     value = "${aws_iam_instance_profile.ec2_read_keys-profile.arn}"
 }
+# EC2 instance profile to manage EIP
+output "eip_instance_profile_name" {
+    value = "${aws_iam_instance_profile.ec2_manage_eip-profile.name}"
+}
+output "eip_instance_profile_arn" {
+    value = "${aws_iam_instance_profile.ec2_manage_eip-profile.arn}"
+}
 
 # VPCs
 output "primary_vpc" {
