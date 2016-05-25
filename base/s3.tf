@@ -12,6 +12,7 @@ resource "aws_s3_bucket" "tf_state-bucket" {
     }
     tags {
         Name = "terraform state bucket"
+        Env = "shared"
     }
 }
 
@@ -94,4 +95,26 @@ resource "aws_s3_bucket_object" "ssh_pub_keys" {
     key = "pubkeys/${element(split(",", var.ssh_key_names), count.index)}"
     content = "${file("files/pubkeys/${element(split(",", var.ssh_key_names), count.index)}")}"
     depends_on = ["aws_s3_bucket.s3_base-bucket"]
+}
+
+# Manage user-data scripts
+resource "aws_s3_bucket_object" "user-data" {
+    bucket = "${var.base_bucket}"
+    count = "${length(split(",", var.user_data_scripts))}"
+    key = "user-data/${element(split(",", var.user_data_scripts), count.index)}"
+    content = "${file("files/user-data/${element(split(",", var.user_data_scripts), count.index)}")}"
+    depends_on = ["aws_s3_bucket.s3_base-bucket"]
+}
+# user-data template scripts need extra effort
+resource "template_file" "s3_userdata_pubkeys-template" {
+    template = "${file("files/user-data/ssh-pubkeys.tmpl")}"
+    vars {
+        base_bucket = "${var.base_bucket}"
+    }
+}
+resource "aws_s3_bucket_object" "pubkeys-user-data" {
+    bucket = "${var.base_bucket}"
+    key = "user-data/ssh-pubkeys"
+    content = "${template_file.s3_userdata_pubkeys-template.rendered}"
+    depends_on = ["aws_s3_bucket.s3_base-bucket", "template_file.s3_userdata_pubkeys-template"]
 }
