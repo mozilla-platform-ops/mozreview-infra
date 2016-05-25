@@ -16,6 +16,11 @@ variable "user_data_scripts" {
     # ssh-pubkeys.tmpl handled via template_file resource in base/s3.tf
 }
 
+variable "pubkey_bucket_prefix" {
+    description = "S3 bucket prefix for pubkeys in base_bucket"
+    default = "pubkeys"
+}
+
 variable "ssh_pub_key_bucket" {
     description = "Name of the S3 bucket for SSH public keys"
     default = "moz-mozreview-keys"

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Caveat: any variable inside curly braces will be interpolated by terraform!
-#
+# 
 # Create script and cron job to auto-update SSH pub keys
 
 ## determine SSH_USER
@@ -21,6 +21,7 @@ SSH_SCRIPT="/home/$SSH_USER/bin/update_ssh_keys.sh"
 cat <<EOF > $SSH_SCRIPT
 #!/usr/bin/env bash
 BUCKET="${base_bucket}"
+PREFIX="${pubkey_bucket_prefix}"
 MARKER="# KEYS_BELOW_WILL_BE_UPDATED_BY_TERRAFORM"
 
 umask 0077
@@ -32,9 +33,9 @@ if [ -d pub_key_files ]; then
 else
     mkdir pub_key_files
 fi
-for key in \$(aws s3api list-objects --bucket \$BUCKET | jq -r '.Contents[].Key')
+for path in \$(aws s3api list-objects --bucket \$BUCKET --prefix \$PREFIX | jq -r '.Contents[].Key')
 do
-    aws s3 cp s3://\$BUCKET/\$key pub_key_files/ > /dev/null
+    aws s3 cp s3://\$BUCKET/\$path pub_key_files/ > /dev/null
 done
 
 ## Set marker

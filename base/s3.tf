@@ -110,6 +110,7 @@ resource "template_file" "s3_userdata_pubkeys-template" {
     template = "${file("files/user-data/ssh-pubkeys.tmpl")}"
     vars {
         base_bucket = "${var.base_bucket}"
+        pubkey_bucket_prefix = "${var.pubkey_bucket_prefix}"
     }
 }
 resource "aws_s3_bucket_object" "pubkeys-user-data" {
