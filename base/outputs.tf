@@ -20,21 +20,22 @@ output "eip_instance_profile_arn" {
 output "primary_vpc" {
     value = "${aws_vpc.primary_vpc.id}"
 }
+output "bastion_vpc" {
+    value = "${module.bastion_vpc.vpc_id}"
+}
+output "bastion_rtb" {
+    value = "${module.bastion_vpc.public_route_table_id}"
+}
 
 # Security Groups
+output "allow_bastion_sg" {
+    value = "${module.bastion.external_sg_id}"
+}
 output "allow_all-sg" {
     value = "${aws_security_group.allow_all-sg.id}"
 }
 
-output "ssh_only-sg" {
-    value = "${aws_security_group.ssh_only-sg.id}"
-}
-
-output "allow_from_bastion-sg" {
-    value = "${aws_security_group.bastion_internal-sg.id}"
-}
-
 # Elastic IP for bastion host
 output "bastion_eip" {
-    value = "${aws_eip.bastion-eip.public_ip}"
+    value = "${module.bastion.bastion_ip}"
 }

@@ -1,35 +1,12 @@
-# Launch config for bastion ASG
-resource "aws_launch_configuration" "bastion-lc" {
-    name_prefix = "bastion-lc-"
-    instance_type = "t2.micro"
-    image_id = "${lookup(var.centos7_amis, var.region)}"
-    key_name = "klibby@mozilla.com"
-    security_groups = ["${aws_security_group.bastion_external-sg.id}"]
-    iam_instance_profile = "${aws_iam_instance_profile.ec2_manage_eip-profile.arn}"
-    user_data = "${file("files/bastion-userdata.sh")}"
-    lifecycle {
-        create_before_destroy = true
-    }
-}
+module "bastion" {
+    source = "../modules/bastion"
 
-resource "aws_autoscaling_group" "bastion-asg" {
-    name = "bastion-asg"
-    availability_zones = ["us-west-2a"]
-    max_size = 2
-    min_size = 1
-    desired_capacity = 1
-    launch_configuration = "${aws_launch_configuration.bastion-lc.name}"
-    lifecycle {
-        create_before_destroy = true
-    }
-    tag {
-        key = "Name"
-        value = "bastion"
-        propagate_at_launch = true
-    }
-    tag {
-        key = "EIP"
-        value = "${aws_eip.bastion-eip.public_ip}"
-        propagate_at_launch = true
-    }
+    name = "bastion"
+    ami = "${lookup(var.centos7_amis, var.region)}"
+    instance_type = "t2.medium"
+    instance_profile = "${aws_iam_instance_profile.ec2_manage_eip-profile.arn}"
+    vpc_id = "${module.bastion_vpc.vpc_id}"
+    public_subnet_ids = "${module.bastion_vpc.public_subnets}"
+    s3_key_bucket = "${var.base_bucket}"
+    addl_user_data = "ssh-pubkeys,associate-eip"
 }

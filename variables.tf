@@ -77,3 +77,8 @@ variable "availablity_zones" {
         us-west-2 = "us-west-2a,us-west-2b,us-west-2c"
     }
 }
+
+variable "bastion_cidr" {
+    description = "Bastion host CIDR block to be used in VPC peering"
+    default = "172.1.1.0/24"
+}

@@ -2,56 +2,6 @@
 This file defines the global VPC configuration including VPNs
 */
 
-# Create EIP for bastion host (to be associated later)
-resource "aws_eip" "bastion-eip" {
-    vpc = true
-    lifecycle {
-        prevent_destroy = true
-    }
-}
-
-# Allow SSH access to bastion host
-resource "aws_security_group" "bastion_external-sg" {
-    name = "bastion_external-sg"
-    description = "Allow SSH to bastion host from all"
-    ingress {
-        from_port = 22
-        to_port = 22
-        protocol = "tcp"
-        cidr_blocks = ["0.0.0.0/0"]
-    }
-    egress {
-        from_port = 0
-        to_port = 0
-        protocol = "-1"
-        cidr_blocks = ["0.0.0.0/0"]
-    }
-    tags {
-        Name = "bastion_external-sg"
-    }
-}
-
-# Allow all access from bastion host(s) to all resources
-resource "aws_security_group" "bastion_internal-sg" {
-    name = "bastion_internal-sg"
-    description = "Allow all access from bastion host"
-    ingress {
-        from_port = 0
-        to_port = 0
-        protocol = "-1"
-        security_groups = ["${aws_security_group.bastion_external-sg.id}"]
-    }
-    egress {
-        from_port = 0
-        to_port = 0
-        protocol = "-1"
-        security_groups = ["${aws_security_group.bastion_external-sg.id}"]
-    }
-    tags {
-        Name = "bastion_internal-sg"
-    }
-}
-
 # Define Primary VPC network
 resource "aws_vpc" "primary_vpc" {
     # This is a NetOps sanctioned cidr block - see bug 1272453
@@ -86,29 +36,6 @@ resource "aws_security_group" "allow_all-sg" {
     }
 }
 
-# SSH and icmp inbound
-resource "aws_security_group" "ssh_only-sg" {
-    name = "ssh_only-sg"
-    description = "Allow inbound ssh only"
-    vpc_id = "${aws_vpc.primary_vpc.id}"
-    ingress {
-        from_port = 22
-        to_port = 22
-        protocol = "tcp"
-        cidr_blocks = ["0.0.0.0/0"]
-    }
-    ingress {
-        from_port = 0
-        to_port = 0
-        protocol = "icmp"
-        cidr_blocks = ["0.0.0.0/0"]
-    }
-
-    tags {
-        Name = "SSH and ICMP only"
-    }
-}
-
 # Add primary igw route
 resource "aws_route" "route_all_rt_rule" {
     route_table_id = "${aws_vpc.primary_vpc.main_route_table_id}"
@@ -139,3 +66,11 @@ module "vpn" {
   vpn_dest_cidr_block = "10.0.0.0/8"
 }
 
+module "bastion_vpc" {
+    source = "../modules/tf_aws_vpc"
+
+    name = "bastion-vpc"
+    cidr = "${var.bastion_cidr}"
+    public_subnets = "${var.bastion_cidr}"
+    azs_public = "us-west-2a"
+}
