@@ -1,5 +1,5 @@
 resource "template_file" "user_data" {
-    template = "${file("files/user_data.tmpl")}"
+    template = "${file("${path.module}/files/user_data.tmpl")}"
     vars {
         s3_bucket = "${var.base_bucket}"
         addl_user_data = "${var.user_data_scripts}"
