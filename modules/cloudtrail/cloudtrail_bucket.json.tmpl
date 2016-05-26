@@ -23,6 +23,17 @@
                     "s3:x-amz-acl": "bucket-owner-full-control"
                 }
             }
+        },
+        {
+            "Sid": "AllowELBWrite",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": [
+                    "797873946194"
+                ]
+            },
+            "Action": "s3:PutObject",
+            "Resource": "arn:aws:s3:::${bucket_name}/AWSLogs/${account_id}/*"
         }
     ]
 }
