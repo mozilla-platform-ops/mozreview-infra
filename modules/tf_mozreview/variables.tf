@@ -22,5 +22,10 @@ variable "memcached_instance_type" {}
 variable "elc_subnets" {}
 variable "elc_azs" {}
 variable "num_memcached_nodes" {}
-variable "allow_from_bastion-sg" {}
+variable "allow_bastion_sg" {}
 
+
+variable "peer_vpc_id" {}
+variable "peer_route_table_id" {}
+variable "peer_cidr_block" {} 
+variable "peer_account_id" {}

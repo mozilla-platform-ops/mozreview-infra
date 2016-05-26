@@ -9,6 +9,20 @@ resource "aws_vpc" "mozreview_vpc" {
 
 }
 
+module "vpc_bastion_peer" {
+    source = "../tf_vpc_peer"
+
+    name = "${var.env}-bastion_peer"
+    requester_vpc_id = "${aws_vpc.mozreview_vpc.id}"
+    requester_route_table_id = "${aws_route_table.mozreview_public-rt.id}"
+    requester_cidr_block = "${var.vpc_cidr}"
+    peer_vpc_id = "${var.peer_vpc_id}"
+    peer_route_table_id = "${var.peer_route_table_id}"
+    peer_cidr_block = "${var.peer_cidr_block}"
+    peer_account_id = "${var.peer_account_id}"
+
+}
+
 # Setup internet gateway for vpc
 resource "aws_internet_gateway" "mozreview_igw" {
     vpc_id = "${aws_vpc.mozreview_vpc.id}"
@@ -52,8 +66,7 @@ resource "aws_route_table_association" "elb" {
   route_table_id = "${aws_route_table.mozreview_public-rt.id}"
 }
 
-
-# Setup private subnets for webheads
+# Setup public subnets for webheads
 resource "aws_subnet" "web_subnet" {
   vpc_id = "${aws_vpc.mozreview_vpc.id}"
   cidr_block = "${element(split(",", var.web_subnets), count.index)}"
@@ -61,12 +74,14 @@ resource "aws_subnet" "web_subnet" {
   count = "${length(compact(split(",", var.web_subnets)))}"
 #  tags { Name = "${var.name}-private" }
 #TODO: tags
+
+  map_public_ip_on_launch = true
 }
 
 resource "aws_route_table_association" "web" {
   count = "${length(compact(split(",", var.web_subnets)))}"
   subnet_id = "${element(aws_subnet.web_subnet.*.id, count.index)}"
-  route_table_id = "${aws_route_table.mozreview_private-rt.id}"
+  route_table_id = "${aws_route_table.mozreview_public-rt.id}"
 }
 
 # Setup private subnets for rds

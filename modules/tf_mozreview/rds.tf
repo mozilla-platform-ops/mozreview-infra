@@ -24,7 +24,8 @@ resource "aws_security_group" "mozreview_db-sg" {
         from_port = 3306
         to_port = 3306
         protocol = "tcp"
-        cidr_blocks = ["${aws_subnet.web_subnet.*.cidr_block}"]
+        cidr_blocks = ["0.0.0.0/0"]
+        #security_groups = ["${aws_security_group.mozreview_web-sg.id}"]
     }
     egress {
         from_port = 0

@@ -1,5 +1,5 @@
 # EC2 resources
-/*
+
 resource "aws_security_group" "mozreview_web-sg" {
     name = "${var.env}_web-sg"
     description = "Web instance security group"
@@ -13,9 +13,9 @@ resource "aws_security_group" "mozreview_web-sg" {
     # Allow all from bastion sg
     ingress {
         from_port = 0
-        to_port = 0
-        protocol = "-1"
-        security_groups = ["${var.allow_from_bastion-sg}"]
+        to_port = 22
+        protocol = "tcp"
+        security_groups = ["${var.allow_bastion_sg}"]
     }
     egress {
         from_port = 0
@@ -24,10 +24,10 @@ resource "aws_security_group" "mozreview_web-sg" {
         cidr_blocks = ["0.0.0.0/0"]
     }
     tags {
-        Name = "${var.env}_db-sg"
+        Name = "${var.env}_web-sg"
     }
 }
-*/
+
 
 # Create web head ec2 instances and evenly distribute them across the web subnets/azs
 resource "aws_instance" "web_ec2_instance" {
@@ -36,11 +36,17 @@ resource "aws_instance" "web_ec2_instance" {
     subnet_id = "${element(aws_subnet.web_subnet.*.id, count.index % length(split(",", var.web_subnets)))}"
     instance_type = "${var.web_instance_type}"
     user_data = "${file("${path.module}/files/web_userdata.sh")}"
-#    vpc_security_group_ids = ["${aws_security_group.mozreview_web-sg.name}"]
+    vpc_security_group_ids = ["${aws_security_group.mozreview_web-sg.id}"]
     iam_instance_profile = "${var.web_instance_profile}"
 
-# TODO: better tags
+    root_block_device {
+        volume_type = "gp2"
+        volume_size = 10
+        delete_on_termination = true
+    }
+
     tags {
-        Name = "${var.web_instance_name}-${count.index}"
+        Name = "${var.env}-web-${count.index}"
     }
 }
+
