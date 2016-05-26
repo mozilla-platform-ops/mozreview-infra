@@ -12,10 +12,16 @@ resource "aws_security_group" "mozreview_web-sg" {
     }
     # Allow all from bastion sg
     ingress {
-        from_port = 22
-        to_port = 22
-        protocol = "tcp"
+        from_port = 0
+        to_port = 0
+        protocol = "-1"
         security_groups = ["${var.allow_bastion_sg}"]
+    }
+    ingress {
+        from_port = 80
+        to_port = 80
+        protocol = "tcp"
+        security_groups = ["${aws_security_group.mozreview_elb-sg.id}"]
     }
     egress {
         from_port = 0
