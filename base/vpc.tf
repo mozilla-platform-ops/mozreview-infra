@@ -1,5 +1,5 @@
 /*
-This file defines the global VPC configuration including VPNs
+This file defines the shared VPC configurations including VPNs
 */
 
 # Define VPC for vpn to scl3
@@ -9,53 +9,6 @@ resource "aws_vpc" "primary_vpc" {
 
     tags {
         Name = "vpn-vpc"
-    }
-}
-
-resource "aws_security_group" "bastion_to_vpn-sg" {
-    name = "bastion_to_vpn-sg"
-    description = "Allow all access from bastion host to VPN VPC"
-    vpc_id = "${aws_vpc.primary_vpc.id}"
-    ingress {
-        from_port = 0
-        to_port = 0
-        protocol = "-1"
-        security_groups = ["${module.bastion.external_sg_id}"]
-        #security_groups = ["${terraform_remote_state.mozreview_base.output.allow_bastion_sg}"]
-    }
-    egress {
-        from_port = 0
-        to_port = 0
-        protocol = "-1"
-        security_groups = ["${module.bastion.external_sg_id}"]
-        #security_groups = ["${terraform_remote_state.mozreview_base.output.allow_bastion_sg}"]
-    }
-    tags {
-        Name = "bastion_to_vpn-sg"
-    }
-}
-
-# This security group should only be used for debugging
-resource "aws_security_group" "allow_all-sg" {
-    name = "allow_all-sg"
-    description = "Allow all inbound and outbound traffic"
-    vpc_id = "${aws_vpc.primary_vpc.id}"
-    ingress {
-        from_port = 0
-        to_port = 0
-        protocol = "-1"
-        cidr_blocks = ["0.0.0.0/0"]
-    }
-
-    egress {
-        from_port = 0
-        to_port = 0
-        protocol = "-1"
-        cidr_blocks = ["0.0.0.0/0"]
-    }
-
-    tags {
-        Name = "allow_all-sg"
     }
 }
 

@@ -17,8 +17,11 @@ output "eip_instance_profile_arn" {
 }
 
 # VPCs
-output "primary_vpc" {
+output "hg_vpc" {
     value = "${aws_vpc.primary_vpc.id}"
+}
+output "hg_vpc_cidr" {
+    value = "${aws_vpc.primary_vpc.cidr_block}"
 }
 output "bastion_vpc" {
     value = "${module.bastion_vpc.vpc_id}"
@@ -30,9 +33,6 @@ output "bastion_rtb" {
 # Security Groups
 output "allow_bastion_sg" {
     value = "${module.bastion.external_sg_id}"
-}
-output "allow_all-sg" {
-    value = "${aws_security_group.allow_all-sg.id}"
 }
 
 # Elastic IP for bastion host
