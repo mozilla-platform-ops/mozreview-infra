@@ -17,8 +17,11 @@ output "eip_instance_profile_arn" {
 }
 
 # VPCs
-output "primary_vpc" {
+output "hg_vpc" {
     value = "${aws_vpc.primary_vpc.id}"
+}
+output "hg_vpc_cidr" {
+    value = "${aws_vpc.primary_vpc.cidr_block}"
 }
 output "bastion_vpc" {
     value = "${module.bastion_vpc.vpc_id}"
