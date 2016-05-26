@@ -6,6 +6,19 @@ resource "aws_elasticache_subnet_group" "mozreview-elc-subnet-group" {
     subnet_ids = ["${aws_subnet.elc_subnet.*.id}"]
 }
 
+resource "aws_security_group" "mozreview-elc-sg" {
+    name = "${var.env}-elc-sg"
+    description = "${var.env} Elasticache security group"
+    vpc_id = "${aws_vpc.mozreview_vpc.id}"
+
+    ingress {
+        from_port = 11211
+        to_port = 11211
+        protocol = "tcp"
+        security_groups = ["${aws_security_group.mozreview_web-sg.id}"]
+    }
+}
+
 resource "aws_elasticache_parameter_group" "mozreview-elc-pg" {
     name = "memcache-params"
     family = "memcached1.4"
@@ -24,6 +37,6 @@ resource "aws_elasticache_cluster" "mozreview-elc" {
     subnet_group_name = "${aws_elasticache_subnet_group.mozreview-elc-subnet-group.name}"
     availability_zones = ["${split(",", var.elc_azs)}"]
     maintenance_window = "Sun:08:00-Sun:09:00"
-
+    security_group_ids = ["${aws_security_group.mozreview-elc-sg.id}"]
     parameter_group_name = "${aws_elasticache_parameter_group.mozreview-elc-pg.name}"
 }
