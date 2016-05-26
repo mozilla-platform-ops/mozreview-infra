@@ -1,16 +1,36 @@
 # Elasitic Load Balancer
 
+resource "aws_security_group" "mozreview_elb-sg" {
+    name = "${var.env}_elb-sg"
+    description = "Elb instance security group"
+    vpc_id = "${aws_vpc.mozreview_vpc.id}"
+    ingress {
+        from_port = 80
+        to_port = 80
+        protocol = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+    egress {
+        from_port = 0
+        to_port = 0
+        protocol = "-1"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+    tags {
+        Name = "${var.env}_elb-sg"
+    }
+}
+
 # Setup ELB for mozreview webheads
 # Create a new load balancer
 resource "aws_elb" "mozreview_web_elb" {
     name = "${var.env}-elb"
-
     subnets = ["${aws_subnet.elb_subnet.*.id}"]
-
+    security_groups = ["${aws_security_group.mozreview_elb-sg.id}"]
 
 # TODO: Uploud SSL cert and flip to https
     listener {
-        instance_port = 8000
+        instance_port = 80
         instance_protocol = "http"
         lb_port = 80
         lb_protocol = "http"
