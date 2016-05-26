@@ -1,0 +1,12 @@
+variable "env" {}
+variable "vpc_cidr" {}
+variable "instance_type" {}
+variable "subnets" {}
+variable "azs" {}
+variable "ami_id" {}
+variable "instance_profile" {}
+variable "allow_bastion_sg" {}
+variable "peer_vpc_id" {}
+variable "peer_route_table_id" {}
+variable "peer_cidr_block" {}
+variable "peer_account_id" {}
