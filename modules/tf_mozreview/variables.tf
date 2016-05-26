@@ -22,4 +22,5 @@ variable "memcached_instance_type" {}
 variable "elc_subnets" {}
 variable "elc_azs" {}
 variable "num_memcached_nodes" {}
+variable "allow_from_bastion-sg" {}
 
