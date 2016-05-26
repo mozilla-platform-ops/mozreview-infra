@@ -34,9 +34,6 @@ output "bastion_rtb" {
 output "allow_bastion_sg" {
     value = "${module.bastion.external_sg_id}"
 }
-output "allow_all-sg" {
-    value = "${aws_security_group.allow_all-sg.id}"
-}
 
 # Elastic IP for bastion host
 output "bastion_eip" {
