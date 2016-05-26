@@ -67,7 +67,7 @@ resource "aws_elb" "elb" {
         unhealthy_threshold = 2
         timeout = 3
         target = "HTTP:80/"
-        interval = 3
+        interval = 5
     }
     tags {
         Name = "hg-elb"
