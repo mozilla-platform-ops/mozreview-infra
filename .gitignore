@@ -1,2 +1,5 @@
 .terraform
 terraform.tfstate.backup
+
+# dividehex's dev env
+dividehex/
