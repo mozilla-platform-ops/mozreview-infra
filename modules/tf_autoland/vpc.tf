@@ -11,6 +11,19 @@ resource "aws_vpc" "autoland_vpc" {
     }
 }
 
+module "vpc_bastion_peer" {
+source = "../tf_vpc_peer"
+
+     name = "${var.env}-bastion_peer"
+     requester_vpc_id = "${aws_vpc.autoland_vpc.id}"
+     requester_route_table_id = "${aws_route_table.autoland_public-rt.id}"
+     requester_cidr_block = "${var.vpc_cidr}"
+     peer_vpc_id = "${var.peer_vpc_id}"
+     peer_route_table_id = "${var.peer_route_table_id}"
+     peer_cidr_block = "${var.peer_cidr_block}"
+     peer_account_id = "${var.peer_account_id}"
+}
+
 # Setup internet gateway for vpc
     resource "aws_internet_gateway" "autoland_igw" {
     vpc_id = "${aws_vpc.autoland_vpc.id}"
