@@ -7,7 +7,7 @@ resource "aws_vpc" "autoland_vpc" {
     enable_dns_support = true
 
     tags {
-        Name = "autoland-${var.env}-vpc"
+        Name = "${var.env}-autoland-vpc"
     }
 }
 
@@ -29,13 +29,16 @@ resource "aws_internet_gateway" "autoland_igw" {
     vpc_id = "${aws_vpc.autoland_vpc.id}"
 
     tags {
-        Name = "autoland-${var.env}-igw"
+        Name = "${var.env}-autoland-igw"
     }
 }
 
 # Setup route table for public subnets
 resource "aws_route_table" "autoland_public-rt" {
     vpc_id = "${aws_vpc.autoland_vpc.id}"
+
+    tags {
+        Name = "${var.env}-autoland-rt"
 }
 
 # Add default route to internet bound route table
@@ -52,7 +55,7 @@ resource "aws_subnet" "autoland_subnet" {
     availability_zone = "${element(split(",", var.azs), count.index)}"
     count = "${length(compact(split(",", var.subnets)))}"
     tags {
-        Name = "autoland-${var.env}-subnet"
+        Name = "${var.env}-autoland-subnet-${count.index}"
     }
 }
 

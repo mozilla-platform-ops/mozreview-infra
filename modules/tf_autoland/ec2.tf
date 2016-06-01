@@ -34,8 +34,9 @@ resource "aws_security_group" "autoland_web-sg" {
         protocol = "-1"
         cidr_blocks = ["0.0.0.0/0"]
     }
+
     tags {
-        Name = "autoland_${var.env}_web-sg"
+        Name = "${var.env}-autoland-sg"
     }
 }
 
@@ -64,7 +65,7 @@ resource "aws_instance" "web_ec2_instance" {
     }
 
     tags {
-        Name = "autoland-${var.env}-web-${count.index}"
+        Name = "${var.env}-autoland-${count.index}"
         EIP = "${aws_eip.autoland_web-eip.public_ip}"
     }
 }
