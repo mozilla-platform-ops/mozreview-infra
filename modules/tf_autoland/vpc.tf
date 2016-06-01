@@ -39,6 +39,7 @@ resource "aws_route_table" "autoland_public-rt" {
 
     tags {
         Name = "${var.env}-autoland-rt"
+    }
 }
 
 # Add default route to internet bound route table
