@@ -12,7 +12,7 @@ resource "aws_vpc" "autoland_vpc" {
 }
 
 module "vpc_bastion_peer" {
-source = "../tf_vpc_peer"
+    source = "../tf_vpc_peer"
 
      name = "${var.env}-bastion_peer"
      requester_vpc_id = "${aws_vpc.autoland_vpc.id}"
@@ -25,7 +25,7 @@ source = "../tf_vpc_peer"
 }
 
 # Setup internet gateway for vpc
-    resource "aws_internet_gateway" "autoland_igw" {
+resource "aws_internet_gateway" "autoland_igw" {
     vpc_id = "${aws_vpc.autoland_vpc.id}"
 
     tags {
@@ -54,12 +54,10 @@ resource "aws_subnet" "autoland_subnet" {
     tags {
         Name = "autoland-${var.env}-subnet"
     }
-
-  map_public_ip_on_launch = true
 }
 
- resource "aws_route_table_association" "autoland" {
-   count = "${length(compact(split(",", var.subnets)))}"
-   subnet_id = "${element(aws_subnet.autoland_subnet.*.id, count.index)}"
-route_table_id = "${aws_route_table.autoland_public-rt.id}"
+resource "aws_route_table_association" "autoland" {
+    count = "${length(compact(split(",", var.subnets)))}"
+    subnet_id = "${element(aws_subnet.autoland_subnet.*.id, count.index)}"
+    route_table_id = "${aws_route_table.autoland_public-rt.id}"
 }
