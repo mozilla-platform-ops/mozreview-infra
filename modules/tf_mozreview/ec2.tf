@@ -30,7 +30,7 @@ resource "aws_security_group" "mozreview_web-sg" {
         cidr_blocks = ["0.0.0.0/0"]
     }
     tags {
-        Name = "${var.env}_web-sg"
+        Name = "${var.env}-mozreview-web-sg"
     }
 }
 
@@ -52,7 +52,7 @@ resource "aws_instance" "web_ec2_instance" {
     }
 
     tags {
-        Name = "${var.env}-web-${count.index}"
+        Name = "${var.env}-mozreview-web-${count.index}"
     }
 }
 

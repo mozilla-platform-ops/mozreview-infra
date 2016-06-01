@@ -6,7 +6,7 @@ resource "aws_db_subnet_group" "mozreview_dbsg" {
     description = "Mozreview DB Subnet Group"
     subnet_ids = ["${aws_subnet.rds_subnet.*.id}"]
     tags {
-        Name = "${var.env}-db_subnet_group"
+        Name = "${var.env}-mozreview-db-subnet-grp"
     }
 }
 
@@ -22,12 +22,12 @@ resource "aws_security_group" "mozreview_db-sg" {
         security_groups = ["${aws_security_group.mozreview_web-sg.id}"]
     }
     tags {
-        Name = "${var.env}_db-sg"
+        Name = "${var.env}-mozreview-db-sg"
     }
 }
 
 resource "aws_db_instance" "mozreview-rds" {
-    identifier = "${var.env}-rds"
+    identifier = "${var.env}-mozreview-rds"
     storage_type = "gp2"
     allocated_storage = 500
     engine = "mysql"
@@ -48,7 +48,7 @@ resource "aws_db_instance" "mozreview-rds" {
 #    monitoring_role_arn = "arn:aws:iam::699292812394:role/rds-monitoring-role"
 #    monitoring_interval = 60
     tags {
-        Name = "${var.env}-rds"
+        Name = "${var.env}-mozreview-rds"
     }
 }
 

@@ -17,6 +17,10 @@ resource "aws_security_group" "mozreview-elc-sg" {
         protocol = "tcp"
         security_groups = ["${aws_security_group.mozreview_web-sg.id}"]
     }
+
+    tags {
+        Name = "${var.env}-mozreview-sg"
+    }
 }
 
 resource "aws_elasticache_parameter_group" "mozreview-elc-pg" {
@@ -39,4 +43,8 @@ resource "aws_elasticache_cluster" "mozreview-elc" {
     maintenance_window = "Sun:08:00-Sun:09:00"
     security_group_ids = ["${aws_security_group.mozreview-elc-sg.id}"]
     parameter_group_name = "${aws_elasticache_parameter_group.mozreview-elc-pg.name}"
+
+    tags {
+        Name = "${var.env}-mozreview-elc"
+    }
 }

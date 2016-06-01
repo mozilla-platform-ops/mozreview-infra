@@ -4,7 +4,7 @@
 
 # Mozreview S3 bucket for binary objects
 resource "aws_s3_bucket" "mozreview_bucket" {
-    bucket = "${var.env}-bin"
+    bucket = "${var.env}-mozreveiw-bin"
     acl = "private"
 
    logging {
@@ -13,7 +13,7 @@ resource "aws_s3_bucket" "mozreview_bucket" {
     }
 
     tags {
-        Name = "${var.env}-bin"
+        Name = "${var.env}-mozreview-bin"
     }
 }
 

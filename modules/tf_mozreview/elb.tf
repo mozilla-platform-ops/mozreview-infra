@@ -1,7 +1,7 @@
 # Elasitic Load Balancer
 
 resource "aws_security_group" "mozreview_elb-sg" {
-    name = "${var.env}_elb-sg"
+    name = "${var.env}-mozreview-elb-sg"
     description = "Elb instance security group"
     vpc_id = "${aws_vpc.mozreview_vpc.id}"
     ingress {
@@ -17,7 +17,7 @@ resource "aws_security_group" "mozreview_elb-sg" {
         cidr_blocks = ["0.0.0.0/0"]
     }
     tags {
-        Name = "${var.env}_elb-sg"
+        Name = "${var.env}-mozreview-elb-sg"
     }
 }
 
@@ -51,7 +51,7 @@ resource "aws_elb" "mozreview_web_elb" {
 */
 # TODO: Health Checks
     tags {
-        Name = "${var.env}-elb"
+        Name = "${var.env}-mozreview-elb"
     }
 }
 
