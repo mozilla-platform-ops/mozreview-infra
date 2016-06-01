@@ -1,5 +1,16 @@
 # EC2 resources
 
+resource "template_file" "user_data" {
+    template = "${file("${path.module}/files/user_data.tmpl")}"
+    vars {
+        s3_bucket = "${var.user_data_bucket}"
+        addl_user_data = "${var.addl_user_data}"
+    }
+    lifecycle {
+        create_before_destroy = true
+    }
+}
+
 resource "aws_security_group" "autoland_web-sg" {
     name = "autoland_${var.env}_web-sg"
     description = "Web instance security group"
@@ -28,6 +39,12 @@ resource "aws_security_group" "autoland_web-sg" {
     }
 }
 
+resource "aws_eip" "autoland_web-eip" {
+    vpc = true
+    #lifecycle {
+    #    prevent_destroy = true
+    #}
+}
 
 # Create web head ec2 instances and evenly distribute them across the web subnets/azs
 resource "aws_instance" "web_ec2_instance" {
@@ -35,7 +52,7 @@ resource "aws_instance" "web_ec2_instance" {
     count = "${length(split(",", var.subnets))}"
     subnet_id = "${element(aws_subnet.autoland_subnet.*.id, count.index % length(split(",", var.subnets)))}"
     instance_type = "${var.instance_type}"
-    user_data = "${file("${path.module}/files/web_userdata.sh")}"
+    user_data = "${template_file.user_data.rendered}"
     vpc_security_group_ids = ["${aws_security_group.autoland_web-sg.id}"]
     iam_instance_profile = "${var.instance_profile}"
 
@@ -47,6 +64,6 @@ resource "aws_instance" "web_ec2_instance" {
 
     tags {
         Name = "autoland-${var.env}-web-${count.index}"
+        EIP = "${aws_eip.autoland_web-eip.public_ip}"
     }
 }
-

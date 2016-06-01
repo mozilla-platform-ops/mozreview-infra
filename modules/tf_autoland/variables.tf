@@ -10,3 +10,5 @@ variable "peer_vpc_id" {}
 variable "peer_route_table_id" {}
 variable "peer_cidr_block" {}
 variable "peer_account_id" {}
+variable "user_data_bucket" {}
+variable "addl_user_data" {}
