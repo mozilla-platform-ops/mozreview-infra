@@ -1,7 +1,5 @@
 # S3 buckets
 
-# TODO: ELB log bucket
-
 # Mozreview S3 bucket for binary objects
 resource "aws_s3_bucket" "mozreview_bucket" {
     bucket = "${var.env}-mozreveiw-bin"
@@ -9,7 +7,7 @@ resource "aws_s3_bucket" "mozreview_bucket" {
 
    logging {
        target_bucket = "${var.logging_bucket}"
-       target_prefix = "${var.env}-web_bin"
+       target_prefix = "s3/${var.env}-mozreview-bin/"
     }
 
     tags {
