@@ -38,7 +38,16 @@ resource "aws_route_table" "autoland_public-rt" {
     vpc_id = "${aws_vpc.autoland_vpc.id}"
 
     tags {
-        Name = "${var.env}-autoland-rt"
+        Name = "${var.env}-autoland-public-rt"
+    }
+}
+
+# Setup route table for private subnets
+resource "aws_route_table" "autoland_private-rt" {
+    vpc_id = "${aws_vpc.autoland_vpc.id}"
+
+    tags {
+        Name = "${var.env}-autoland-private-rt"
     }
 }
 
@@ -60,8 +69,24 @@ resource "aws_subnet" "autoland_subnet" {
     }
 }
 
-resource "aws_route_table_association" "autoland" {
+resource "aws_subnet" "autoland_rds_subnet" {
+    vpc_id = "${aws_vpc.autoland_vpc.id}"
+    cidr_block = "${element(split(",", var.rds_subnets), count.index)}"
+    availability_zone = "${element(split(",", var.rds_azs), count.index)}"
+    count = "${length(compact(split(",", var.rds_subnets)))}"
+    tags {
+        Name = "${var.env}-autoland-rds-subnet-${count.index}"
+    }
+}
+
+resource "aws_route_table_association" "autoland-public" {
     count = "${length(compact(split(",", var.subnets)))}"
     subnet_id = "${element(aws_subnet.autoland_subnet.*.id, count.index)}"
     route_table_id = "${aws_route_table.autoland_public-rt.id}"
+}
+
+resource "aws_route_table_association" "autoland-private" {
+    count = "${length(compact(split(",", var.rds_subnets)))}"
+    subnet_id = "${element(aws_subnet.autoland_rds_subnet.*.id, count.index)}"
+    route_table_id = "${aws_route_table.autoland_private-rt.id}"
 }

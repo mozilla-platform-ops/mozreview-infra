@@ -18,6 +18,18 @@ variable "azs" {
     description = "Availablity zones to be matched to subnets"
 }
 
+variable "rds_subnets" {
+    description = "Subnets for rds instances"
+}
+
+variable "rds_azs" {
+    description = "Availablity zones to be matched to subnets"
+}
+
+variable "rds_instance_class" {
+    description = "RDS instances class type"
+}
+
 variable "ami_id" {
     description = "Autoland ec2 instance AMI"
 }

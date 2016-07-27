@@ -28,6 +28,25 @@ resource "aws_security_group" "autoland_web-sg" {
         protocol = "-1"
         security_groups = ["${var.allow_bastion_sg}"]
     }
+    # TODO: remove for prodution
+    ingress {
+        from_port = 22
+        to_port = 22
+        protocol = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+    ingress {
+        from_port = 80
+        to_port = 80
+        protocol = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+    ingress {
+        from_port = 443
+        to_port = 443
+        protocol = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
     egress {
         from_port = 0
         to_port = 0
@@ -60,7 +79,14 @@ resource "aws_instance" "web_ec2_instance" {
     associate_public_ip_address = true
     root_block_device {
         volume_type = "gp2"
-        volume_size = 10
+        volume_size = 32
+        delete_on_termination = true
+    }
+
+    ebs_block_device {
+        device_name = "/dev/sdb"
+        volume_type = "gp2"
+        volume_size = 32
         delete_on_termination = true
     }
 
