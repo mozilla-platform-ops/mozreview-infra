@@ -34,3 +34,8 @@ module "autoland" {
 output "autoland_rds_address" {
     value = "${module.autoland.rds_address}"
 }
+
+output "autoland_eip_address" {
+    value = "${module.autoland.eip_address}"
+}
+
