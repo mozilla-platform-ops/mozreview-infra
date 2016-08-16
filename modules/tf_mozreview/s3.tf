@@ -17,4 +17,15 @@ resource "aws_s3_bucket" "mozreview_bucket" {
 
 # TODO: add policy to allow read/write from web heads
 
-
+/*
+# Render policy to allow EC2 assumed role to read SSH pubkey bucket
+resource "template_file" "s3_read_pubkeys-template" {
+    template = "${file("files/s3_read_pubkeys.json.tmpl")}"
+    vars {
+        account_id = "${var.account_id}"
+        key_bucket = "${var.ssh_pub_key_bucket}"
+        ec2_assume_role = "${aws_iam_role.ec2_assume-role.name}"
+        ec2_manage_eip_role = "${aws_iam_role.ec2_manage_eip-role.name}"
+    }
+}
+*/
