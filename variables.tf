@@ -12,7 +12,7 @@ variable "base_bucket" {
 
 variable "user_data_scripts" {
     description = "List of user-data scripts to manage in S3 bucket"
-    default = "associate-eip,attach-vol"
+    default = "associate-eip,attach-vol,set_sysctl"
     # ssh-pubkeys.tmpl handled via template_file resource in base/s3.tf
 }
 
