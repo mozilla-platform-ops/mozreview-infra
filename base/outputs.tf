@@ -39,3 +39,8 @@ output "allow_bastion_sg" {
 output "bastion_eip" {
     value = "${module.bastion.bastion_ip}"
 }
+
+# Autoland hosted zone ID
+output "autoland_route53_zone_id" {
+    value = "${aws_route53_zone.autoland-hz.zone_id}"
+}
