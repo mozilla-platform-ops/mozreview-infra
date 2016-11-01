@@ -3,7 +3,8 @@ variable "tf_sns_topic_name" {
     description = "Hack to work around GH-4157"
     default = "tf_state_notifications"
 }
-resource "template_file" "bucket_sns-policy" {
+
+data "template_file" "bucket_sns-policy" {
     template = "${file("files/bucket_sns.json.tmpl")}"
     vars {
         region = "${var.region}"
@@ -17,7 +18,7 @@ resource "template_file" "bucket_sns-policy" {
 resource "aws_sns_topic" "tf_state_bucket-topic" {
     name = "${var.tf_sns_topic_name}"
     display_name = "tf-state"
-    policy = "${template_file.bucket_sns-policy.rendered}"
+    policy = "${data.template_file.bucket_sns-policy.rendered}"
 }
 
 # email protocol not supported, as it requires out-of-band authorization

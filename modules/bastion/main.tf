@@ -50,14 +50,11 @@ resource "aws_security_group" "bastion_external-sg" {
     }
 }
 
-resource "template_file" "user_data" {
+data "template_file" "user_data" {
     template = "${file("${path.module}/user_data.tmpl")}"
     vars {
         s3_bucket = "${var.s3_key_bucket}"
         addl_user_data = "${var.addl_user_data}"
-    }
-    lifecycle {
-        create_before_destroy = true
     }
 }
 
@@ -68,7 +65,7 @@ resource "aws_launch_configuration" "bastion-lc" {
     image_id = "${var.ami}"
     security_groups = ["${aws_security_group.bastion_external-sg.id}"]
     iam_instance_profile = "${var.instance_profile}"
-    user_data = "${template_file.user_data.rendered}"
+    user_data = "${data.template_file.user_data.rendered}"
     key_name = "klibby@mozilla.com"
     lifecycle {
         create_before_destroy = true

@@ -2,7 +2,7 @@
 
 # Configure remote state for mozreview_base
 # This allows use of base outputs such as primary_vpc id
-resource "terraform_remote_state" "mozreview_base" {
+data "terraform_remote_state" "mozreview_base" {
     backend = "s3"
     config {
         encrypt = true

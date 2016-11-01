@@ -29,7 +29,7 @@ resource "aws_s3_bucket_notification" "tf_state_bucket-notify" {
 }
 
 # Render policy to allow EC2 assumed role to read SSH pubkey bucket
-resource "template_file" "s3_read_pubkeys-template" {
+data "template_file" "s3_read_pubkeys-template" {
     template = "${file("files/s3_read_pubkeys.json.tmpl")}"
     vars {
         account_id = "${var.account_id}"
@@ -43,7 +43,7 @@ resource "template_file" "s3_read_pubkeys-template" {
 resource "aws_s3_bucket" "ssh_pubkey-bucket" {
     bucket = "${var.ssh_pub_key_bucket}"
     acl = "private"
-    policy = "${template_file.s3_read_pubkeys-template.rendered}"
+    policy = "${data.template_file.s3_read_pubkeys-template.rendered}"
     logging {
         target_bucket = "${module.cloudtrail.bucket_id}"
         target_prefix = "s3/${var.ssh_pub_key_bucket}/"
@@ -63,7 +63,7 @@ resource "aws_s3_bucket_object" "ssh_pubkeys" {
 }
 
 # Render policy to allow EC2 assumed role to read base bucket
-resource "template_file" "s3_base_bucket-template" {
+data "template_file" "s3_base_bucket-template" {
     template = "${file("files/s3_base_bucket.json.tmpl")}"
     vars {
         account_id = "${var.account_id}"
@@ -77,7 +77,7 @@ resource "template_file" "s3_base_bucket-template" {
 resource "aws_s3_bucket" "s3_base-bucket" {
     bucket = "${var.base_bucket}"
     acl = "private"
-    policy = "${template_file.s3_base_bucket-template.rendered}"
+    policy = "${data.template_file.s3_base_bucket-template.rendered}"
     logging {
         target_bucket = "${module.cloudtrail.bucket_id}"
         target_prefix = "s3/${var.base_bucket}/"
@@ -105,8 +105,9 @@ resource "aws_s3_bucket_object" "user-data" {
     content = "${file("files/user-data/${element(split(",", var.user_data_scripts), count.index)}")}"
     depends_on = ["aws_s3_bucket.s3_base-bucket"]
 }
+
 # user-data template scripts need extra effort
-resource "template_file" "s3_userdata_pubkeys-template" {
+data "template_file" "s3_userdata_pubkeys-template" {
     template = "${file("files/user-data/ssh-pubkeys.tmpl")}"
     vars {
         base_bucket = "${var.base_bucket}"
@@ -116,6 +117,6 @@ resource "template_file" "s3_userdata_pubkeys-template" {
 resource "aws_s3_bucket_object" "pubkeys-user-data" {
     bucket = "${var.base_bucket}"
     key = "user-data/ssh-pubkeys"
-    content = "${template_file.s3_userdata_pubkeys-template.rendered}"
-    depends_on = ["aws_s3_bucket.s3_base-bucket", "template_file.s3_userdata_pubkeys-template"]
+    content = "${data.template_file.s3_userdata_pubkeys-template.rendered}"
+    depends_on = ["aws_s3_bucket.s3_base-bucket", "data.template_file.s3_userdata_pubkeys-template"]
 }
