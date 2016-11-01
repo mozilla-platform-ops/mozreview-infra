@@ -18,12 +18,12 @@ module "autoland" {
     rds_azs = "${lookup(var.availablity_zones, var.region)}"
     rds_instance_class = "db.t2.micro"
 
-    instance_profile = "${terraform_remote_state.mozreview_base.output.eip_instance_profile_name}"
+    instance_profile = "${data.terraform_remote_state.mozreview_base.eip_instance_profile_name}"
 
-    allow_bastion_sg = "${terraform_remote_state.mozreview_base.output.allow_bastion_sg}"
+    allow_bastion_sg = "${data.terraform_remote_state.mozreview_base.allow_bastion_sg}"
 
-    peer_vpc_id = "${terraform_remote_state.mozreview_base.output.bastion_vpc}"
-    peer_route_table_id = "${terraform_remote_state.mozreview_base.output.bastion_rtb}"
+    peer_vpc_id = "${data.terraform_remote_state.mozreview_base.bastion_vpc}"
+    peer_route_table_id = "${data.terraform_remote_state.mozreview_base.bastion_rtb}"
     peer_cidr_block = "${var.bastion_cidr}"
     peer_account_id = "${var.account_id}"
 
