@@ -44,3 +44,8 @@ output "bastion_eip" {
 output "autoland_route53_zone_id" {
     value = "${aws_route53_zone.autoland-hz.zone_id}"
 }
+
+# mozreview.mozops.net hosted zone ID
+output "mozops_route53_zone_id" {
+    value = "${aws_route53_zone.mozops_mozreview-hz.zone_id}"
+}
