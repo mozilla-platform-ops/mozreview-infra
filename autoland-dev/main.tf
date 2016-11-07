@@ -11,7 +11,7 @@ module "autoland" {
 
     instance_type = "t2.medium"
     ami_id = "ami-075b9b67"
-    subnets = "172.29.1.0/24"
+    subnets = "172.29.1.0/24,172.29.5.0/24,172.29.6.0/24"
     azs = "${lookup(var.availablity_zones, var.region)}"
 
     rds_subnets = "172.29.2.0/24,172.29.3.0/24,172.29.4.0/24"
@@ -29,6 +29,9 @@ module "autoland" {
 
     user_data_bucket = "${var.base_bucket}"
     addl_user_data = "ssh-pubkeys,associate-eip"
+    ssl_cert_arn = "arn:aws:acm:us-west-2:154007893214:certificate/5a364d17-a006-44e2-b7e8-bd2d73920cb1"
+
+    logging_bucket = "${var.cloudtrail_bucket}"
 }
 
 output "autoland_rds_address" {
@@ -37,5 +40,9 @@ output "autoland_rds_address" {
 
 output "autoland_eip_address" {
     value = "${module.autoland.eip_address}"
+}
+
+output "autoland_alb_dns_name" {
+    value = "${module.autoland.alb_dns_name}"
 }
 

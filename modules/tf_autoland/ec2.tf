@@ -66,8 +66,8 @@ resource "aws_eip" "autoland_web-eip" {
 # Create web head ec2 instances and evenly distribute them across the web subnets/azs
 resource "aws_instance" "web_ec2_instance" {
     ami = "${var.ami_id}"
-    count = "${length(split(",", var.subnets))}"
-    subnet_id = "${element(aws_subnet.autoland_subnet.*.id, count.index % length(split(",", var.subnets)))}"
+    count = 1
+    subnet_id = "${aws_subnet.autoland_subnet.0.id}"
     instance_type = "${var.instance_type}"
     user_data = "${data.template_file.user_data.rendered}"
     vpc_security_group_ids = ["${aws_security_group.autoland_web-sg.id}"]
@@ -91,4 +91,10 @@ resource "aws_instance" "web_ec2_instance" {
         Name = "${var.env}-autoland-${count.index}"
         EIP = "${aws_eip.autoland_web-eip.public_ip}"
     }
+}
+
+resource "aws_alb_target_group_attachment" "autoland_tg_attachment" {
+    target_group_arn = "${aws_alb_target_group.autoland-alb-tg.arn}"
+    target_id = "${aws_instance.web_ec2_instance.id}"
+    port = 80
 }
