@@ -65,3 +65,11 @@ variable "user_data_bucket" {
 variable "addl_user_data" {
     description = "List of user-data scripts in user-data bucket for Autoland ec2 instances"
 }
+
+variable "ssl_cert_arn" {
+    description = "SSL Certificate ARN for ALB frontend"
+}
+
+variable "logging_bucket" {
+    description = "S3 bucket for storing logs"
+}
