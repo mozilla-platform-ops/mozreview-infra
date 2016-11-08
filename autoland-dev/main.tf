@@ -34,6 +34,37 @@ module "autoland" {
     logging_bucket = "${var.cloudtrail_bucket}"
 }
 
+# route53 A (Alias) record for autoland ALB
+resource "aws_route53_record" "autoland-alb-1_dev_usw2_mozreview_mozops_net" {
+    zone_id = "${data.terraform_remote_state.mozreview_base.mozops_route53_zone_id}"
+    name = "autoland-alb-1.dev.usw2.mozreview.mozops.net"
+    type = "A"
+
+    alias {
+      name = "${module.autoland.alb_dns_name}"
+      zone_id = "${module.autoland.alb_zone_id}"
+      evaluate_target_health = true
+    }
+}
+
+# route53 A record for autoland EIP
+resource "aws_route53_record" "autoland-eip-1_dev_usw2_mozreview_mozops_net" {
+    zone_id = "${data.terraform_remote_state.mozreview_base.mozops_route53_zone_id}"
+    name = "autoland-eip-1.dev.usw2.mozreview.mozops.net"
+    type = "A"
+    ttl = "300"
+    records = ["${module.autoland.eip_address}"]
+}
+
+# route53 CNAME record for autoland RDS
+resource "aws_route53_record" "autoland-rds-1_dev_usw2_mozreview_mozops_net" {
+    zone_id = "${data.terraform_remote_state.mozreview_base.mozops_route53_zone_id}"
+    name = "autoland-rds-1.dev.usw2.mozreview.mozops.net"
+    type = "CNAME"
+    ttl = "300"
+    records = ["${module.autoland.rds_address}"]
+}
+
 output "autoland_rds_address" {
     value = "${module.autoland.rds_address}"
 }
@@ -46,3 +77,8 @@ output "autoland_alb_dns_name" {
     value = "${module.autoland.alb_dns_name}"
 }
 
+output "autoland_mozops_fqdns" {
+    value = ["${aws_route53_record.autoland-alb-1_dev_usw2_mozreview_mozops_net.fqdn}",
+             "${aws_route53_record.autoland-eip-1_dev_usw2_mozreview_mozops_net.fqdn}",
+             "${aws_route53_record.autoland-rds-1_dev_usw2_mozreview_mozops_net.fqdn}"]
+}
