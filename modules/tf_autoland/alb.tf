@@ -33,7 +33,7 @@ resource "aws_alb" "autoland_alb" {
 }
 
 resource "aws_alb_target_group" "autoland-alb-tg" {
-    name     = "autoland-alb-tg"
+    name     = "${var.env}-autoland-alb-tg"
     port     = 80
     protocol = "HTTP"
     vpc_id   = "${aws_vpc.autoland_vpc.id}"
