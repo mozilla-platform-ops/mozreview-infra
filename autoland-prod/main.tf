@@ -34,6 +34,19 @@ module "autoland" {
     logging_bucket = "${var.cloudtrail_bucket}"
 }
 
+# route53 A (Alias) record for autoland.mozilla.org ALB
+resource "aws_route53_record" "autoland_mozilla_org" {
+    zone_id = "${data.terraform_remote_state.mozreview_base.autoland_route53_zone_id}"
+    name = "autoland.mozilla.org"
+    type = "A"
+
+    alias {
+      name = "${module.autoland.alb_dns_name}"
+      zone_id = "${module.autoland.alb_zone_id}"
+      evaluate_target_health = true
+    }
+}
+
 # route53 A (Alias) record for autoland ALB
 resource "aws_route53_record" "autoland-alb-1_usw2_mozreview_mozops_net" {
     zone_id = "${data.terraform_remote_state.mozreview_base.mozops_route53_zone_id}"
