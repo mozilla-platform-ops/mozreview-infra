@@ -28,7 +28,7 @@ variable "ssh_pub_key_bucket" {
 
 variable "ssh_key_names" {
     description = "List of SSH pub keys to manage in S3 bucket"
-    default = "klibby@mozilla.com,jwatkins@mozilla.com"
+    default = "klibby@mozilla.com,jwatkins@mozilla.com,gps@mozilla.com,bjones@mozilla.com"
 }
 
 variable "tf_state_bucket" {
