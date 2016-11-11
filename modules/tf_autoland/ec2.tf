@@ -25,24 +25,11 @@ resource "aws_security_group" "autoland_web-sg" {
         protocol = "-1"
         security_groups = ["${var.allow_bastion_sg}"]
     }
-    # TODO: remove for prodution
-    ingress {
-        from_port = 22
-        to_port = 22
-        protocol = "tcp"
-        cidr_blocks = ["0.0.0.0/0"]
-    }
     ingress {
         from_port = 80
         to_port = 80
         protocol = "tcp"
-        cidr_blocks = ["0.0.0.0/0"]
-    }
-    ingress {
-        from_port = 443
-        to_port = 443
-        protocol = "tcp"
-        cidr_blocks = ["0.0.0.0/0"]
+        security_groups = ["${aws_security_group.autoland_alb-sg.id}"]
     }
     egress {
         from_port = 0
