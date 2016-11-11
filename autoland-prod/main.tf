@@ -32,6 +32,8 @@ module "autoland" {
     ssl_cert_arn = "arn:aws:acm:us-west-2:154007893214:certificate/3c52abe9-e69e-4e03-abbc-51c31a723f2f"
 
     logging_bucket = "${var.cloudtrail_bucket}"
+
+    incoming_alb_cidr_blocks = ["0.0.0.0/0"]
 }
 
 # route53 A (Alias) record for autoland.mozilla.org ALB

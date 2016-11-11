@@ -73,3 +73,8 @@ variable "ssl_cert_arn" {
 variable "logging_bucket" {
     description = "S3 bucket for storing logs"
 }
+
+variable "incoming_alb_cidr_blocks" {
+    description = "A list of cidr blocks allowed to access ALB"
+    type = "list"
+}
