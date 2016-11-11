@@ -6,7 +6,7 @@ resource "aws_security_group" "autoland_alb-sg" {
         from_port = 443
         to_port = 443
         protocol = "tcp"
-        cidr_blocks = ["0.0.0.0/0"]
+        cidr_blocks = ["${var.incoming_alb_cidr_blocks}"]
     }
     egress {
         from_port = 0
