@@ -84,3 +84,11 @@ output "autoland_mozops_fqdns" {
              "${aws_route53_record.autoland-eip-1_dev_usw2_mozreview_mozops_net.fqdn}",
              "${aws_route53_record.autoland-rds-1_dev_usw2_mozreview_mozops_net.fqdn}"]
 }
+
+output "autoland_ec2_private_dns" {
+    value = "${module.autoland.ec2_private_dns}"
+}
+
+output "autoland_ec2_private_ip" {
+    value = "${module.autoland.ec2_private_ip}"
+}
