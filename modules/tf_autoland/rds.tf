@@ -32,7 +32,7 @@ resource "aws_db_instance" "autoland-rds" {
     engine = "postgres"
     engine_version = "9.5.2"
     instance_class = "${var.rds_instance_class}"
-    username = "autoland_admin"
+    username = "postgres"
     password = "change_this_after_deployment"
     backup_retention_period = 1
     backup_window = "07:00-07:30"
