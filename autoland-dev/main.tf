@@ -29,7 +29,7 @@ module "autoland" {
 
     user_data_bucket = "${var.base_bucket}"
     addl_user_data = "ssh-pubkeys,associate-eip"
-    ssl_cert_arn = "arn:aws:acm:us-west-2:154007893214:certificate/5a364d17-a006-44e2-b7e8-bd2d73920cb1"
+    ssl_cert_arn = "arn:aws:acm:us-west-2:154007893214:certificate/d3e3ebd2-deb6-4a77-a100-6ac86009554c"
 
     logging_bucket = "${var.cloudtrail_bucket}"
 
