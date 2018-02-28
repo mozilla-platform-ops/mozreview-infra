@@ -33,7 +33,7 @@ module "autoland" {
 
     logging_bucket = "${var.cloudtrail_bucket}"
 
-    incoming_alb_cidr_blocks = ["63.245.214.0/23"]
+    incoming_alb_cidr_blocks = ["63.245.214.0/23", "35.162.163.249/32", "35.167.59.33/32", "52.26.222.5/32"]
 }
 
 # route53 A (Alias) record for autoland.mozilla.org ALB
