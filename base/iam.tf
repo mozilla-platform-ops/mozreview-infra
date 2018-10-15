@@ -45,13 +45,13 @@ resource "aws_iam_role_policy" "ec2_manage_eip-policy" {
 # Create instance profile for EC2 instances to assume role
 resource "aws_iam_instance_profile" "ec2_read_keys-profile" {
     name = "ec2_read_keys"
-    roles = ["${aws_iam_role.ec2_assume-role.name}"]
+    role = "${aws_iam_role.ec2_assume-role.name}"
 }
 
 # Create instance profile for bastion hosts to manage EIP
 resource "aws_iam_instance_profile" "ec2_manage_eip-profile" {
     name = "ec2_manage_eip"
-    roles = ["${aws_iam_role.ec2_manage_eip-role.name}"]
+    role = "${aws_iam_role.ec2_manage_eip-role.name}"
 }
 
 # Create a policy that requires multifactor authentication
