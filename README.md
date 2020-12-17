@@ -1,5 +1,4 @@
-Mozilla DevServices AWS Account Initialization
-==============================================
+# [archived] Mozilla DevServices AWS Account Initialization
 
 https://mozreview.signin.aws.amazon.com/console
 
